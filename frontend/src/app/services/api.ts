@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../eviorment';
+import { environment } from '../../enviorment';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -19,6 +19,8 @@ export class ApiService {
     return this.http.get<any[]>(`${this.base}/facilities/top3`);
   }
   getFacility(id: string): Observable<any> {
+    console.log('CALLING API WITH ID:', id);
+
     return this.http.get<any>(`${this.base}/facilities/${id}`);
   }
   getCities(): Observable<string[]> {

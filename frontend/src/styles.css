@@ -2,3 +2,16 @@
 body { font-family: Arial, sans-serif; background: #f8f9fa; color: #202124; }
 .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
 a { text-decoration: none; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar { padding: 0 16px; }
+    .navbar nav a { margin-left: 12px; font-size: 13px; }
+    .card { padding: 16px; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .navbar .logo span { display: none; }
+    table { font-size: 12px; }
+    th, td { padding: 8px; }
+  }

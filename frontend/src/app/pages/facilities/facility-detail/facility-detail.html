@@ -1,1 +1,81 @@
-<p>facility-detail works!</p>
+<div class="page">
+    @if (loading) {
+      <div class="state">Učitavanje detalja...</div>
+      <div class="back">
+        <a [routerLink]="['/facilities']">← Nazad na listu objekata</a>
+      </div>
+      
+    } @else if (error) {
+      <div class="state error">{{ error }}</div>
+    } @else if (facility) {
+      <div class="back">
+        <a [routerLink]="['/facilities']">← Nazad na listu objekata</a>
+      </div>
+  
+      <div class="hero">
+        <div>
+          <h2>{{ facility.name }}</h2>
+          <p>{{ facility.city }} • {{ facility.address }}</p>
+        </div>
+  
+        <div class="price">
+          {{ facility.pricePerHour }} RSD / sat
+        </div>
+      </div>
+  
+      <div class="info-grid">
+        <div class="panel">
+          <h3>Osnovne informacije</h3>
+          <p><strong>Opis:</strong> {{ facility.description || 'Nema opisa.' }}</p>
+          <p><strong>Radno vreme:</strong> {{ facility.workingHours?.open }} - {{ facility.workingHours?.close }}</p>
+          <p><strong>Status:</strong> {{ facility.status }}</p>
+          <p><strong>Lajkovi:</strong> {{ facility.likes?.length || 0 }}</p>
+          <p><strong>Nesviđanja:</strong> {{ facility.dislikes?.length || 0 }}</p>
+        </div>
+  
+        <div class="panel">
+          <h3>Sportovi</h3>
+          <div class="tags">
+            @for (s of facility.sports; track s._id) {
+              <span class="tag">{{ s.name }}</span>
+            }
+          </div>
+        </div>
+      </div>
+  
+      <div class="section">
+        <h3>Tereni / hale</h3>
+  
+        @if (!facility.courts || facility.courts.length === 0) {
+          <div class="state">Nema definisanih terena/hala.</div>
+        } @else {
+          <div class="courts-grid">
+            @for (court of facility.courts; track court._id) {
+              <div class="court-card">
+                <h4>{{ court.name }}</h4>
+                <p><strong>Tip:</strong> {{ courtTypeLabel(court.type) }}</p>
+                <p><strong>Kapacitet:</strong> {{ court.capacity }}</p>
+                <p><strong>Sportovi:</strong> {{ getCourtSports(court) }}</p>
+                <p><strong>Oprema:</strong> {{ court.equipment || 'Nije uneto' }}</p>
+                <p><strong>Aktivan:</strong> {{ court.isActive ? 'Da' : 'Ne' }}</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+  
+      <div class="section">
+        <h3>Galerija</h3>
+  
+        @if (!facility.images || facility.images.length === 0) {
+          <div class="state">Nema slika za ovaj objekat.</div>
+        } @else {
+          <div class="gallery">
+            @for (img of facility.images; track img) {
+              <img [src]="img" alt="Slika objekta" />
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>

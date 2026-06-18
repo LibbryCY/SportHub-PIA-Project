@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema({
   },
   favoriteSports: [{ type: mongoose.Schema.Types.ObjectId, ref: "Sport" }],
 
+  facilityPenalties: [
+    {
+      facility: { type: mongoose.Schema.Types.ObjectId, ref: "Facility" },
+      noShows: { type: Number, default: 0 },
+      blocked: { type: Boolean, default: false },
+    },
+  ],
+
   // Employee-specific
   facilityName: String,
   facilityAddress: String,
@@ -49,8 +57,6 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
-  b = await bcrypt.compare(candidatePassword, this.password);
-  console.log("Comparing passwords:", candidatePassword, this.password, b);
   return bcrypt.compare(candidatePassword, this.password);
 };
 

@@ -123,8 +123,6 @@ async function seed() {
     maxNoShows: 3,
     status: "active",
     description: "Moderni sportski centar u srcu Beograda.",
-    latitude: 44.8178,
-    longitude: 20.4678,
     courts: [
       {
         name: "Teniski teren 1",
@@ -163,8 +161,6 @@ async function seed() {
     workingHours: { open: "08:00", close: "22:00" },
     maxNoShows: 3,
     status: "active",
-    latitude: 45.2671,
-    longitude: 19.8335,
     courts: [
       {
         name: "Fudbalski teren A",

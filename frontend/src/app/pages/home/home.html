@@ -6,13 +6,13 @@
   </section>
   
   <section class="section">
-    <h2 class="section-title">🏆 TOP 3 Objekta</h2>
+    <h2 class="section-title"> TOP 3 Objekta</h2>
     <div class="card-grid">
       @for (f of top3; track f._id; let i = $index) {
         <div class="card top-card">
           <div class="top-rank">#{{ i + 1 }}</div>
           <h3>{{ f.name }}</h3>
-          <p class="city">📍 {{ f.city }}</p>
+          <p class="city"> {{ f.city }}</p>
           <div class="sports-tags">
             @for (s of f.sports; track s._id) {
               <span class="tag">{{ s.name }}</span>
@@ -30,7 +30,7 @@
   
   @if (promotions.length > 0) {
     <section class="section">
-      <h2 class="section-title">🎯 Aktuelne Promocije</h2>
+      <h2 class="section-title">Aktuelne Promocije</h2>
       <div class="promo-grid">
         @for (p of promotions; track p._id) {
           <div class="promo-card">

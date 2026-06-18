@@ -10,8 +10,8 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/auth/forgot-password/forgot-password').then(m => m.ForgotPassword) 
   },
   { path: 'register', loadComponent: () => import('./pages/auth/register/register').then(m => m.Register) },
-  { path: 'facilities', loadComponent: () => import('./pages/facilities/facility-list/facility-list').then(m => m.FacilityListComponent) },
-  { path: 'facilities/:id', loadComponent: () => import('./pages/facilities/facility-detail/facility-detail').then(m => m.FacilityDetailComponent) },
+  { path: 'facilities', loadComponent: () => import('./pages/facilities/facility-list/facility-list').then(m => m.FacilityList) },
+  { path: 'facilities/:id', loadComponent: () => import('./pages/facilities/facility-detail/facility-detail').then(m => m.FacilityDetail) },
 
 //   {
 //     path: 'athlete',

@@ -1,1 +1,82 @@
-<p>facility-list works!</p>
+<div class="page">
+    <div class="header">
+      <h2>Objekti</h2>
+      <p>Pregled svih aktivnih sportskih objekata</p>
+    </div>
+  
+    @if (loading) {
+      <div class="state">Učitavanje objekata...</div>
+    } @else if (error) {
+      <div class="state error">{{ error }}</div>
+    } @else {
+      <div class="filters">
+        <div class="field">
+          <label>Naziv / adresa</label>
+          <input
+            type="text"
+            [(ngModel)]="searchText"
+            (input)="onFilterChange()"
+            placeholder="Pretraga po nazivu ili adresi"
+          />
+        </div>
+  
+        <div class="field">
+          <label>Grad</label>
+          <select [(ngModel)]="selectedCity" (change)="onFilterChange()">
+            <option value="">Svi gradovi</option>
+            @for (city of cities; track city) {
+              <option [value]="city">{{ city }}</option>
+            }
+          </select>
+        </div>
+  
+        <div class="field actions">
+          <button type="button" (click)="resetFilters()">Reset</button>
+        </div>
+      </div>
+  
+      <div class="sort-bar">
+        <button type="button" (click)="sort('name')">
+          Naziv {{ sortColumn === 'name' ? (sortAsc ? '↑' : '↓') : '' }}
+        </button>
+        <button type="button" (click)="sort('city')">
+          Grad {{ sortColumn === 'city' ? (sortAsc ? '↑' : '↓') : '' }}
+        </button>
+        <button type="button" (click)="sort('pricePerHour')">
+          Cena {{ sortColumn === 'pricePerHour' ? (sortAsc ? '↑' : '↓') : '' }}
+        </button>
+      </div>
+  
+      @if (filteredFacilities.length === 0) {
+        <div class="state">Nema objekata koji odgovaraju filterima.</div>
+      } @else {
+        <div class="grid">
+          @for (f of filteredFacilities; track f._id) {
+            <div class="card">
+              <div class="top">
+                <h3>{{ f.name }}</h3>
+                <span class="city">{{ f.city }}</span>
+              </div>
+  
+              <p class="address">{{ f.address }}</p>
+  
+              <div class="meta">
+                <span>💰 {{ f.pricePerHour }} RSD / sat</span>
+                <span>🏟️ {{ f.courts?.length || 0 }} terena/hala</span>
+              </div>
+  
+              <div class="sports">
+                @for (s of f.sports; track s._id) {
+                  <span class="tag">{{ s.name }}</span>
+                }
+              </div>
+  
+              <div class="footer">
+                <a [routerLink]="['/facilities', f._id]">Detalji</a>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
