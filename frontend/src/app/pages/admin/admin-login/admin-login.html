@@ -1,0 +1,24 @@
+<div class="auth-page">
+    <div class="auth-card">
+      <div class="admin-badge">Admin portal</div>
+      <h2>Administratorska prijava</h2>
+      <p>Pristup samo za administratore sistema</p>
+  
+      @if (error) {
+        <div class="alert alert-error">{{ error }}</div>
+      }
+  
+      <div class="form-group">
+        <label>Korisničko ime</label>
+        <input class="form-control" [(ngModel)]="form.username" placeholder="Admin korisničko ime">
+      </div>
+      <div class="form-group">
+        <label>Lozinka</label>
+        <input class="form-control" type="password" [(ngModel)]="form.password" placeholder="Lozinka">
+      </div>
+  
+      <button class="btn btn-admin btn-full" (click)="submit()" [disabled]="loading">
+        {{ loading ? 'Prijavljivanje...' : 'Prijavi se' }}
+      </button>
+    </div>
+  </div>

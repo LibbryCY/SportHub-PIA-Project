@@ -1,0 +1,98 @@
+<div class="admin-page">
+    <h1>Upravljanje korisnicima</h1>
+  
+    @if (message) {
+      <div class="alert alert-success">{{ message }}</div>
+    }
+    @if (error) {
+      <div class="alert alert-error">{{ error }}</div>
+    }
+  
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+        Zahtevi za registraciju
+        @if (pendingUsers.length > 0) {
+          <span class="badge">{{ pendingUsers.length }}</span>
+        }
+      </button>
+      <button class="tab" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">
+        Svi korisnici
+      </button>
+    </div>
+  
+    <!-- PENDING -->
+    @if (activeTab === 'pending') {
+      @if (pendingUsers.length === 0) {
+        <div class="empty">Nema novih zahteva za registraciju</div>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Korisnik</th>
+                <th>Email</th>
+                <th>Tip</th>
+                <th>Podaci objekta</th>
+                <th>Akcije</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of pendingUsers; track u._id) {
+                <tr>
+                  <td>
+                    <strong>{{ u.firstName }} {{ u.lastName }}</strong><br>
+                    <small>{{ u.username }}</small>
+                  </td>
+                  <td>{{ u.email }}</td>
+                  <td><span class="badge-role">{{ roleLabel(u.role) }}</span></td>
+                  <td>
+                    @if (u.role === 'employee') {
+                      <small>
+                        {{ u.facilityName }}<br>
+                        MB: {{ u.registrationNumber }}<br>
+                        PIB: {{ u.pib }}
+                      </small>
+                    } @else {
+                      <small>—</small>
+                    }
+                  </td>
+                  <td>
+                    <button class="btn btn-success btn-sm" (click)="approve(u._id)">Odobri</button>
+                    <button class="btn btn-danger btn-sm" (click)="reject(u._id)">Odbij</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  
+    <!-- ALL USERS -->
+    @if (activeTab === 'all') {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Ime i prezime</th>
+              <th>Korisničko ime</th>
+              <th>Email</th>
+              <th>Tip</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of allUsers; track u._id) {
+              <tr>
+                <td>{{ u.firstName }} {{ u.lastName }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td><span class="badge-role">{{ roleLabel(u.role) }}</span></td>
+                <td><span class="badge-status" [class]="'status-' + u.status">{{ statusLabel(u.status) }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>

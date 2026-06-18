@@ -1,0 +1,130 @@
+<section class="hero">
+    <div class="hero-content">
+      <h1>Pronađi i rezerviši sportski teren</h1>
+      <p>{{ totalFacilities }} aktivnih objekata u celoj Srbiji</p>
+    </div>
+  </section>
+  
+  <section class="section">
+    <h2 class="section-title">🏆 TOP 3 Objekta</h2>
+    <div class="card-grid">
+      @for (f of top3; track f._id; let i = $index) {
+        <div class="card top-card">
+          <div class="top-rank">#{{ i + 1 }}</div>
+          <h3>{{ f.name }}</h3>
+          <p class="city">📍 {{ f.city }}</p>
+          <div class="sports-tags">
+            @for (s of f.sports; track s._id) {
+              <span class="tag">{{ s.name }}</span>
+            }
+          </div>
+          <div class="reactions">
+            <span>👍 {{ f.likes }}</span>
+            <span>👎 {{ f.dislikes }}</span>
+          </div>
+          <a [routerLink]="['/facilities', f._id]" class="btn btn-primary btn-sm">Detalji</a>
+        </div>
+      }
+    </div>
+  </section>
+  
+  @if (promotions.length > 0) {
+    <section class="section">
+      <h2 class="section-title">🎯 Aktuelne Promocije</h2>
+      <div class="promo-grid">
+        @for (p of promotions; track p._id) {
+          <div class="promo-card">
+            <div class="promo-discount">{{ discountLabel(p) }} popust</div>
+            <h4>{{ p.name }}</h4>
+            <p>{{ p.facility?.name }} — {{ p.facility?.city }}</p>
+            <p class="promo-dates">
+              {{ p.startDate | date:'dd.MM.yyyy' }} – {{ p.endDate | date:'dd.MM.yyyy' }}
+            </p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+  
+  <section class="section">
+    <h2 class="section-title">🔍 Pretraži Objekte</h2>
+    <div class="card search-card">
+      <div class="search-grid">
+        <div class="form-group">
+          <label>Naziv objekta</label>
+          <input class="form-control" [(ngModel)]="searchForm.name" placeholder="npr. SC Tašmajdan">
+        </div>
+        <div class="form-group">
+          <label>Grad</label>
+          <select class="form-control" [(ngModel)]="searchForm.city">
+            <option value="">Svi gradovi</option>
+            @for (c of cities; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sport</label>
+          <select class="form-control" [(ngModel)]="searchForm.sport">
+            <option value="">Svi sportovi</option>
+            @for (s of sports; track s._id) {
+              <option [value]="s._id">{{ s.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tip terena</label>
+          <select class="form-control" [(ngModel)]="searchForm.courtType">
+            <option value="">Svi tipovi</option>
+            <option value="outdoor">Otvoreni</option>
+            <option value="indoor">Zatvoreni</option>
+            <option value="hall">Dvorana</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-actions">
+        <button class="btn btn-primary" (click)="search()">Pretraži</button>
+        @if (searched) {
+          <button class="btn btn-outline" (click)="resetSearch()">Poništi</button>
+        }
+      </div>
+    </div>
+  
+    @if (searched) {
+      <div class="results">
+        <p class="results-count">{{ searchResults.length }} rezultata</p>
+        @if (searchResults.length === 0) {
+          <div class="empty-state">Nema objekata koji odgovaraju pretrazi.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th (click)="sort('name')">Naziv {{ sortColumn === 'name' ? (sortAsc ? '↑' : '↓') : '' }}</th>
+                  <th (click)="sort('city')">Grad {{ sortColumn === 'city' ? (sortAsc ? '↑' : '↓') : '' }}</th>
+                  <th>Sportovi</th>
+                  <th>Cena/sat</th>
+                  <th>Akcija</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (f of searchResults; track f._id) {
+                  <tr>
+                    <td><strong>{{ f.name }}</strong></td>
+                    <td>{{ f.city }}</td>
+                    <td>
+                      @for (s of f.sports; track s._id) {
+                        <span class="tag">{{ s.name }}</span>
+                      }
+                    </td>
+                    <td>{{ f.pricePerHour }} RSD</td>
+                    <td><a [routerLink]="['/facilities', f._id]" class="btn btn-primary btn-sm">Detalji</a></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  </section>

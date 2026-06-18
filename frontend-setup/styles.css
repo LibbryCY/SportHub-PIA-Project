@@ -1,0 +1,144 @@
+/* styles.css - Global SportSphere Hub styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #1a73e8;
+  --primary-dark: #1557b0;
+  --secondary: #34a853;
+  --danger: #ea4335;
+  --warning: #fbbc04;
+  --bg: #f8f9fa;
+  --surface: #ffffff;
+  --border: #e0e0e0;
+  --text: #202124;
+  --text-muted: #5f6368;
+  --shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+/* Layout */
+.page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+main { flex: 1; padding: 24px 0; }
+
+/* Navbar */
+.navbar {
+  background: var(--primary);
+  color: white;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.navbar .logo { font-size: 20px; font-weight: 700; text-decoration: none; color: white; }
+.navbar nav a { color: rgba(255,255,255,0.9); text-decoration: none; margin-left: 20px; font-size: 14px; }
+.navbar nav a:hover, .navbar nav a.active { color: white; font-weight: 600; }
+
+/* Footer */
+footer {
+  background: var(--text);
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  padding: 20px;
+  font-size: 13px;
+  margin-top: auto;
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 20px; border-radius: var(--radius);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  border: none; transition: all 0.2s;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-success { background: var(--secondary); color: white; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { background: var(--bg); }
+.btn-sm { padding: 5px 12px; font-size: 13px; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Forms */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-muted); }
+.form-control {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-size: 14px; transition: border 0.2s;
+}
+.form-control:focus { outline: none; border-color: var(--primary); }
+.form-control.error { border-color: var(--danger); }
+.error-msg { color: var(--danger); font-size: 12px; margin-top: 4px; }
+
+/* Tables */
+.table-wrapper { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: var(--bg); text-align: left; padding: 12px; font-weight: 600; cursor: pointer; user-select: none; border-bottom: 2px solid var(--border); }
+th:hover { background: var(--border); }
+td { padding: 12px; border-bottom: 1px solid var(--border); }
+tr:hover { background: #f5f5f5; }
+
+/* Status badges */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.badge-pending { background: #fff3cd; color: #856404; }
+.badge-confirmed { background: #d1e7dd; color: #0a3622; }
+.badge-cancelled { background: #f8d7da; color: #58151c; }
+.badge-active { background: #d1e7dd; color: #0a3622; }
+.badge-blocked { background: #f8d7da; color: #58151c; }
+
+/* Calendar */
+.calendar-container { overflow-x: auto; }
+.calendar-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); min-width: 700px; }
+.calendar-header { background: var(--primary); color: white; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; }
+.time-label { padding: 4px 8px; font-size: 12px; color: var(--text-muted); border-right: 1px solid var(--border); }
+.calendar-slot {
+  height: 48px; border: 1px solid var(--border); cursor: pointer;
+  transition: background 0.15s; position: relative;
+}
+.calendar-slot.free:hover { background: #e8f4fd; }
+.calendar-slot.taken { background: #fce8e8; cursor: not-allowed; }
+.calendar-slot.selected { background: #d0e8fc; border: 2px solid var(--primary); }
+
+/* Alerts */
+.alert { padding: 12px 16px; border-radius: var(--radius); margin-bottom: 16px; font-size: 14px; }
+.alert-success { background: #d1e7dd; color: #0a3622; }
+.alert-error { background: #f8d7da; color: #58151c; }
+.alert-info { background: #cff4fc; color: #055160; }
+
+/* Auth pages */
+.auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg); }
+.auth-card { background: white; border-radius: 12px; padding: 40px; width: 100%; max-width: 440px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.auth-card h2 { margin-bottom: 8px; font-size: 24px; }
+.auth-card p { color: var(--text-muted); margin-bottom: 24px; font-size: 14px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar { padding: 0 16px; }
+  .navbar nav a { margin-left: 12px; font-size: 13px; }
+  .card { padding: 16px; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .navbar .logo span { display: none; }
+  table { font-size: 12px; }
+  th, td { padding: 8px; }
+}

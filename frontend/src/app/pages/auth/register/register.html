@@ -1,0 +1,158 @@
+<div class="auth-page">
+    <div class="auth-card wide">
+  
+      @if (successMessage) {
+        <div class="success-screen">
+          <div class="success-icon">✅</div>
+          <h2>{{ successMessage }}</h2>
+          <p>Administrator će pregledati vaš zahtev i odobriti nalog.</p>
+          <a routerLink="/login" class="btn btn-primary">Idi na prijavu</a>
+        </div>
+      } @else {
+  
+        @if (step === 1) {
+          <h2>Registracija</h2>
+          <p>Izaberite tip naloga</p>
+          <div class="role-grid">
+            <div class="role-card" (click)="selectRole('athlete')">
+              <h3>Sportista</h3>
+              <p>Rezervišite terene, pronađite saaigrače, kupujte opremu</p>
+            </div>
+            <div class="role-card" (click)="selectRole('employee')">
+              <h3>Zaposleni</h3>
+              <p>Upravljajte sportskim objektom i terminima</p>
+            </div>
+          </div>
+          <div class="auth-links">
+            <span>Već imate nalog?</span>
+            <a routerLink="/login">Prijavite se</a>
+          </div>
+        }
+  
+        @if (step === 2) {
+          <div class="form-header">
+            <button class="btn-back" (click)="step = 1">← Nazad</button>
+            <h2>{{ role === 'athlete' ? ' Registracija sportiste' : ' Registracija zaposlenog' }}</h2>
+          </div>
+  
+          @if (serverError) {
+            <div class="alert alert-error">{{ serverError }}</div>
+          }
+  
+          <div class="form-section-title">Osnovni podaci</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Korisničko ime *</label>
+              <input class="form-control" [class.error]="errors.username" [(ngModel)]="form.username" placeholder="korisnicko_ime">
+              @if (errors.username) { <span class="error-msg">{{ errors.username }}</span> }
+            </div>
+            <div class="form-group">
+              <label>Email *</label>
+              <input class="form-control" [class.error]="errors.email" type="email" [(ngModel)]="form.email" placeholder="email@primer.com">
+              @if (errors.email) { <span class="error-msg">{{ errors.email }}</span> }
+            </div>
+            <div class="form-group">
+              <label>Ime *</label>
+              <input class="form-control" [class.error]="errors.firstName" [(ngModel)]="form.firstName" placeholder="Ime">
+              @if (errors.firstName) { <span class="error-msg">{{ errors.firstName }}</span> }
+            </div>
+            <div class="form-group">
+              <label>Prezime *</label>
+              <input class="form-control" [class.error]="errors.lastName" [(ngModel)]="form.lastName" placeholder="Prezime">
+              @if (errors.lastName) { <span class="error-msg">{{ errors.lastName }}</span> }
+            </div>
+            <div class="form-group">
+              <label>Telefon *</label>
+              <input class="form-control" [class.error]="errors.phone" [(ngModel)]="form.phone" placeholder="06X XXX XXXX">
+              @if (errors.phone) { <span class="error-msg">{{ errors.phone }}</span> }
+            </div>
+          </div>
+  
+          <div class="form-section-title">Lozinka</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Lozinka *</label>
+              <input class="form-control" [class.error]="errors.password" type="password" [(ngModel)]="form.password" placeholder="Min 8 karaktera">
+              @if (errors.password) { <span class="error-msg">{{ errors.password }}</span> }
+              <span class="hint">8-12 karaktera, počinje slovom, sadrži veliko slovo, broj i specijalni karakter</span>
+            </div>
+            <div class="form-group">
+              <label>Potvrda lozinke *</label>
+              <input class="form-control" [class.error]="errors.confirmPassword" type="password" [(ngModel)]="form.confirmPassword" placeholder="Ponovite lozinku">
+              @if (errors.confirmPassword) { <span class="error-msg">{{ errors.confirmPassword }}</span> }
+            </div>
+          </div>
+  
+          <!-- Profilna slika -->
+          <div class="form-section-title">Profilna slika</div>
+          <div class="image-section">
+            <div class="image-preview">
+              @if (profileImagePreview) {
+                <img [src]="profileImagePreview" alt="Preview">
+              } @else {
+                <div class="image-placeholder">👤</div>
+              }
+            </div>
+            <div class="image-actions">
+              <label class="btn btn-outline btn-sm" for="fileInput"> Otpremi sliku</label>
+              <input id="fileInput" type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none">
+              <button class="btn btn-outline btn-sm" type="button" (click)="generateAvatar()">Generiši avatar</button>
+              @if (useAvatar) {
+                <button class="btn btn-primary btn-sm" type="button" (click)="saveAvatarAsFile()"> Sačuvaj kao profilnu sliku</button>
+              }
+            </div>
+          </div>
+  
+          <!-- Omiljeni sportovi (athlete) -->
+          @if (role === 'athlete') {
+            <div class="form-section-title">Omiljeni sportovi (max 5)</div>
+            <div class="sports-grid">
+              @for (s of sports; track s._id) {
+                <div class="sport-chip"
+                     [class.selected]="isSportSelected(s._id)"
+                     (click)="toggleSport(s._id)">
+                  {{ s.name }}
+                </div>
+              }
+            </div>
+          }
+  
+          <!-- Podaci o objektu (employee) -->
+          @if (role === 'employee') {
+            <div class="form-section-title">Podaci o sportskom objektu</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Naziv objekta *</label>
+                <input class="form-control" [class.error]="errors.facilityName" [(ngModel)]="form.facilityName" placeholder="SC Primer">
+                @if (errors.facilityName) { <span class="error-msg">{{ errors.facilityName }}</span> }
+              </div>
+              <div class="form-group">
+                <label>Adresa sedišta *</label>
+                <input class="form-control" [class.error]="errors.facilityAddress" [(ngModel)]="form.facilityAddress" placeholder="Ulica bb, Grad">
+                @if (errors.facilityAddress) { <span class="error-msg">{{ errors.facilityAddress }}</span> }
+              </div>
+              <div class="form-group">
+                <label>Matični broj * (8 cifara)</label>
+                <input class="form-control" [class.error]="errors.registrationNumber" [(ngModel)]="form.registrationNumber" placeholder="12345678" maxlength="8">
+                @if (errors.registrationNumber) { <span class="error-msg">{{ errors.registrationNumber }}</span> }
+              </div>
+              <div class="form-group">
+                <label>PIB * (9 cifara)</label>
+                <input class="form-control" [class.error]="errors.pib" [(ngModel)]="form.pib" placeholder="123456789" maxlength="9">
+                @if (errors.pib) { <span class="error-msg">{{ errors.pib }}</span> }
+              </div>
+            </div>
+          }
+  
+          <button class="btn btn-primary btn-full" (click)="submit()" [disabled]="loading">
+            {{ loading ? 'Slanje...' : 'Registruj se' }}
+          </button>
+  
+          <div class="auth-links">
+            <span>Već imate nalog?</span>
+            <a routerLink="/login">Prijavite se</a>
+          </div>
+        }
+      }
+    </div>
+  </div>

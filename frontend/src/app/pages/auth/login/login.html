@@ -1,0 +1,47 @@
+<div class="auth-page">
+    <div class="auth-card">
+      <h2>Prijava</h2>
+      <p>Dobrodošli nazad na SportSphere Hub</p>
+  
+      @if (error) {
+        <div class="alert alert-error">{{ error }}</div>
+      }
+  
+      <form (ngSubmit)="submit()">
+        
+        <div class="form-group">
+          <label for="username">Korisničko ime</label>
+          <input 
+            id="username"
+            name="username" 
+            class="form-control" 
+            [(ngModel)]="form.username" 
+            placeholder="Unesite korisničko ime"
+            required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Lozinka</label>
+          <input 
+            id="password"
+            name="password" 
+            class="form-control" 
+            type="password" 
+            [(ngModel)]="form.password" 
+            placeholder="Unesite lozinku"
+            required>
+        </div>
+  
+        <button type="submit" class="btn btn-primary btn-full" [disabled]="loading">
+          {{ loading ? 'Prijavljivanje...' : 'Prijavi se' }}
+        </button>
+
+      </form>
+  
+      <div class="auth-links">
+        <a routerLink="/forgot-password">Zaboravili ste lozinku?</a>
+        <span>|</span>
+        <a routerLink="/register">Registrujte se</a>
+      </div>
+    </div>
+  </div>

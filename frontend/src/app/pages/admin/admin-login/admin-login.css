@@ -1,0 +1,39 @@
+.auth-page {
+    min-height: calc(100vh - 104px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #1a1a2e;
+  }
+  .auth-card {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .admin-badge {
+    display: inline-block;
+    background: #dc3545;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .auth-card h2 { font-size: 22px; margin-bottom: 6px; }
+  .auth-card p { color: #5f6368; font-size: 14px; margin-bottom: 24px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #5f6368; }
+  .form-control { width: 100%; padding: 10px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; }
+  .form-control:focus { outline: none; border-color: #dc3545; }
+  .btn { display: flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+  .btn-admin { background: #dc3545; color: white; }
+  .btn-admin:hover:not(:disabled) { background: #b02a37; }
+  .btn-admin:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-full { width: 100%; margin-top: 8px; }
+  .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+  .alert-error { background: #fce8e6; color: #c5221f; }
