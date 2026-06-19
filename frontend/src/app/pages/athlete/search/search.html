@@ -1,1 +1,215 @@
-<p>search works!</p>
+<div class="search-page">
+    <h2 class="page-title">🔍 Pretraga i rezervacija</h2>
+  
+    <!-- FORMA ZA PRETRAGU -->
+    <div class="card search-card">
+      <div class="search-grid">
+        <div class="form-group">
+          <label>Naziv objekta</label>
+          <input class="form-control" [(ngModel)]="searchForm.name" placeholder="npr. SC Tašmajdan">
+        </div>
+        <div class="form-group">
+          <label>Grad</label>
+          <select class="form-control" [(ngModel)]="searchForm.city">
+            <option value="">Svi gradovi</option>
+            @for (c of cities; track c) {
+              <option [value]="c">{{ c }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Sport</label>
+          <select class="form-control" [(ngModel)]="searchForm.sport">
+            <option value="">Svi sportovi</option>
+            @for (s of sports; track s._id) {
+              <option [value]="s._id">{{ s.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tip terena</label>
+          <select class="form-control" [(ngModel)]="searchForm.courtType">
+            <option value="">Svi tipovi</option>
+            <option value="outdoor">Otvoreni</option>
+            <option value="indoor">Zatvoreni</option>
+            <option value="hall">Dvorana</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-bottom">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="searchForm.todayOnly">
+          Samo slobodni termini danas
+        </label>
+        <div class="search-actions">
+          <button class="btn btn-primary" (click)="search()" [disabled]="loading">
+            {{ loading ? 'Pretraga...' : 'Pretraži' }}
+          </button>
+          @if (searched) {
+            <button class="btn btn-outline" (click)="resetSearch()">Poništi</button>
+          }
+        </div>
+      </div>
+    </div>
+  
+    <!-- REZULTATI -->
+    @if (searched) {
+      <div class="results-section">
+        <p class="results-count">{{ searchResults.length }} rezultata</p>
+        @if (searchResults.length === 0) {
+          <div class="empty">Nema objekata koji odgovaraju pretrazi.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th (click)="sort('name')">Naziv{{ sortIcon('name') }}</th>
+                  <th (click)="sort('city')">Grad{{ sortIcon('city') }}</th>
+                  <th>Sportovi</th>
+                  <th>Cena/sat</th>
+                  <th>Radno vreme</th>
+                  <th>Akcija</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (f of searchResults; track f._id) {
+                  <tr [class.selected-row]="selectedFacility?._id === f._id">
+                    <td><strong>{{ f.name }}</strong></td>
+                    <td>{{ f.city }}</td>
+                    <td>
+                      @for (s of f.sports; track s._id) {
+                        <span class="tag">{{ s.name }}</span>
+                      }
+                    </td>
+                    <td>{{ f.pricePerHour }} RSD</td>
+                    <td>{{ f.workingHours?.open }} - {{ f.workingHours?.close }}</td>
+                    <td>
+                      <button class="btn btn-primary btn-sm" (click)="selectFacility(f)">
+                        Odaberi
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  
+    <!-- DETALJI I KALENDAR -->
+    @if (selectedFacility) {
+      <div class="card facility-detail">
+        <div class="facility-header">
+          <div>
+            <h3>{{ selectedFacility.name }}</h3>
+            <p>📍 {{ selectedFacility.city }}, {{ selectedFacility.address }}</p>
+            <p>💰 {{ selectedFacility.pricePerHour }} RSD/sat |  {{ selectedFacility.workingHours?.open }} - {{ selectedFacility.workingHours?.close }}</p>
+          </div>
+        </div>
+  
+        <!-- TEREN NAVIGACIJA -->
+        <div class="court-nav">
+          <button class="btn btn-outline btn-sm" (click)="prevCourt()" [disabled]="selectedCourtIndex === 0">← Prethodni</button>
+          <div class="court-info">
+            <strong>{{ selectedCourt?.name }}</strong>
+            <span class="tag">{{ courtTypeLabel(selectedCourt?.type) }}</span>
+            <span class="tag">Kapacitet: {{ selectedCourt?.capacity }}</span>
+          </div>
+          <button class="btn btn-outline btn-sm" (click)="nextCourt()" [disabled]="selectedCourtIndex === selectedFacility.courts.length - 1">Sledeći →</button>
+        </div>
+  
+        <!-- KALENDAR -->
+        <div class="calendar-section">
+          <div class="calendar-nav">
+            <button class="btn btn-outline btn-sm" (click)="prevWeek()">← Prethodna nedelja</button>
+            <span class="week-label">
+              {{ calendarWeekStart | date:'dd.MM' }} – {{ getWeekDays()[6] | date:'dd.MM.yyyy' }}
+            </span>
+            <button class="btn btn-outline btn-sm" (click)="nextWeek()">Sledeća nedelja →</button>
+          </div>
+  
+          @if (calendarLoading) {
+            <div class="cal-loading">Učitavanje kalendara...</div>
+          } @else {
+            <div class="calendar-wrapper">
+              <div class="calendar-grid">
+                <!-- Header -->
+                <div class="time-col-header"></div>
+                @for (day of getWeekDays(); track day.toISOString(); let i = $index) {
+                  <div class="day-header" [class.today]="day.toDateString() === today.toDateString()">
+                    <span class="day-name">{{ days[i] }}</span>
+                    <span class="day-date">{{ day | date:'dd.MM' }}</span>
+                  </div>
+                }
+  
+                <!-- Rows -->
+                @for (hour of hours; track hour) {
+                  <div class="time-label">{{ hour }}:00</div>
+                  @for (day of getWeekDays(); track day.toISOString()) {
+                    <div
+                      class="cal-slot"
+                      [class.taken]="isTaken(day, hour)"
+                      [class.selected]="isSelected(day, hour)"
+                      [class.past]="isPast(day, hour)"
+                      (click)="toggleSlot(day, hour)"
+                    >
+                      @if (isTaken(day, hour)) {
+                        <span class="slot-label">Zauzeto</span>
+                      }
+                      @if (isSelected(day, hour)) {
+                        <span class="slot-label">✓</span>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+  
+              <!-- Legenda -->
+              <div class="legend">
+                <span class="legend-item"><span class="legend-box free"></span> Slobodno</span>
+                <span class="legend-item"><span class="legend-box taken"></span> Zauzeto</span>
+                <span class="legend-item"><span class="legend-box selected"></span> Vaš izbor</span>
+              </div>
+            </div>
+          }
+        </div>
+  
+        <!-- FORMA ZA REZERVACIJU -->
+        @if (selectedSlots.length > 0) {
+          <div class="reservation-panel">
+            <h4> Rezervacija</h4>
+            <p class="reservation-summary">{{ reservationSummary }}</p>
+  
+            <div class="form-group">
+              <label>Sport (opciono)</label>
+              <select class="form-control" [(ngModel)]="reservationForm.sportId">
+                <option value="">Odaberi sport</option>
+                @for (s of sports; track s._id) {
+                  <option [value]="s._id">{{ s.name }}</option>
+                }
+              </select>
+            </div>
+  
+            @if (reservationMessage) {
+              <div class="alert alert-success">{{ reservationMessage }}</div>
+            }
+            @if (reservationError) {
+              <div class="alert alert-error">{{ reservationError }}</div>
+            }
+  
+            <button class="btn btn-primary" (click)="makeReservation()">
+               Potvrdi rezervaciju
+            </button>
+            <button class="btn btn-outline" (click)="selectedSlots = []" style="margin-left:8px">
+              Poništi izbor
+            </button>
+          </div>
+        }
+  
+        @if (reservationMessage && selectedSlots.length === 0) {
+          <div class="alert alert-success" style="margin-top:16px">{{ reservationMessage }}</div>
+        }
+      </div>
+    }
+  </div>

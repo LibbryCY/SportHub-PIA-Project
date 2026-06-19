@@ -1,1 +1,138 @@
-<p>profile works!</p>
+<div class="profile-page">
+    @if (loading) {
+      <div class="state">Učitavanje...</div>
+    } @else if (user) {
+  
+      @if (message) { <div class="alert alert-success">{{ message }}</div> }
+      @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+      <!-- PROFIL KARTICA -->
+      <div class="card profile-card">
+        <div class="profile-header">
+          <div class="avatar-wrap">
+            <img [src]="profileImagePreview || getImageUrl(user.profileImage)" alt="Avatar">
+          </div>
+          <div>
+            <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+            <p class="username">&#64;{{ user.username }}</p>
+            <p class="email">{{ user.email }}</p>
+          </div>
+          @if (!editMode) {
+            <button class="btn btn-outline btn-sm ml-auto" (click)="editMode = true">✏️ Uredi profil</button>
+          }
+        </div>
+  
+        @if (!editMode) {
+          <div class="info-grid">
+            <div><span class="label">Telefon</span><span>{{ user.phone }}</span></div>
+            <div><span class="label">Uloga</span><span>Sportista</span></div>
+            <div><span class="label">Status</span><span>{{ user.status }}</span></div>
+          </div>
+          <div class="sports-section">
+            <span class="label">Omiljeni sportovi:</span>
+            <div class="tags">
+              @for (s of user.favoriteSports; track s._id) {
+                <span class="tag">{{ s.name }}</span>
+              }
+              @if (!user.favoriteSports?.length) {
+                <span class="muted">Nije odabrano</span>
+              }
+            </div>
+          </div>
+        }
+  
+        @if (editMode) {
+          <div class="edit-form">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Ime</label>
+                <input class="form-control" [(ngModel)]="editForm.firstName">
+              </div>
+              <div class="form-group">
+                <label>Prezime</label>
+                <input class="form-control" [(ngModel)]="editForm.lastName">
+              </div>
+              <div class="form-group">
+                <label>Telefon</label>
+                <input class="form-control" [(ngModel)]="editForm.phone">
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input class="form-control" type="email" [(ngModel)]="editForm.email">
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label>Profilna slika</label>
+              <div class="image-row">
+                <img class="img-preview" [src]="profileImagePreview || getImageUrl(user.profileImage)" alt="Preview">
+                <label class="btn btn-outline btn-sm" for="editFileInput">📁 Promeni sliku</label>
+                <input id="editFileInput" type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none">
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label>Omiljeni sportovi (max 5)</label>
+              <div class="sports-grid">
+                @for (s of sports; track s._id) {
+                  <div class="sport-chip" [class.selected]="isSportSelected(s._id)" (click)="toggleSport(s._id)">
+                    {{ s.name }}
+                  </div>
+                }
+              </div>
+            </div>
+  
+            <div class="btn-row">
+              <button class="btn btn-primary" (click)="saveProfile()">Sačuvaj</button>
+              <button class="btn btn-outline" (click)="cancelEdit()">Otkaži</button>
+            </div>
+          </div>
+        }
+      </div>
+  
+      <!-- REZERVACIJE -->
+      <div class="card">
+        <h3>Moje rezervacije</h3>
+        @if (reservations.length === 0) {
+          <div class="empty">Nemate rezervacija.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th (click)="sort('facility')">Objekat{{ sortIcon('facility') }}</th>
+                  <th (click)="sort('city')">Grad{{ sortIcon('city') }}</th>
+                  <th (click)="sort('courtName')">Teren/hala{{ sortIcon('courtName') }}</th>
+                  <th (click)="sort('sport')">Sport{{ sortIcon('sport') }}</th>
+                  <th (click)="sort('startTime')">Od{{ sortIcon('startTime') }}</th>
+                  <th (click)="sort('endTime')">Do{{ sortIcon('endTime') }}</th>
+                  <th (click)="sort('status')">Status{{ sortIcon('status') }}</th>
+                  <th>Akcija</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of reservations; track r._id) {
+                  <tr>
+                    <td>{{ r.facility?.name }}</td>
+                    <td>{{ r.facility?.city }}</td>
+                    <td>{{ r.courtName }}</td>
+                    <td>{{ r.sport?.name || '—' }}</td>
+                    <td>{{ r.startTime | date:'dd.MM.yyyy HH:mm' }}</td>
+                    <td>{{ r.endTime | date:'HH:mm' }}</td>
+                    <td>
+                      <span class="badge" [class]="'badge-' + r.status">{{ statusLabel(r.status) }}</span>
+                    </td>
+                    <td>
+                      @if (canCancel(r)) {
+                        <button class="btn btn-danger btn-sm" (click)="cancelReservation(r._id)">Otkaži</button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  </div>
