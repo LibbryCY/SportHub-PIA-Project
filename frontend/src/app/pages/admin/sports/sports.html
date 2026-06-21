@@ -1,1 +1,20 @@
-<p>sports works!</p>
+<div class="admin-page">
+    <h1>Upravljanje sportovima</h1>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    <div class="card add-form">
+      <input class="form-control" [(ngModel)]="newSportName" placeholder="Naziv novog sporta" (keyup.enter)="addSport()">
+      <button class="btn btn-primary" (click)="addSport()">+ Dodaj sport</button>
+    </div>
+  
+    <div class="sports-grid">
+      @for (s of sports; track s._id) {
+        <div class="sport-card">
+          <span>{{ s.name }}</span>
+          <button class="btn btn-danger btn-sm" (click)="deactivate(s._id)">Deaktiviraj</button>
+        </div>
+      }
+    </div>
+  </div>

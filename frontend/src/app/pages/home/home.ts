@@ -41,6 +41,8 @@ export class Home implements OnInit {
     });
   }
 
+  // x`
+
   resetSearch() {
     this.searchForm = { name: '', city: '', sport: '', courtType: '' };
     this.searchResults = [];

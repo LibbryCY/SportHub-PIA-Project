@@ -180,6 +180,14 @@
     color: #5f6368;
   }
   
+
+  .btn { display: inline-flex; align-items: center; padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none;margin-right: 5px; text-decoration: none; transition: all 0.2s; }
+  .btn-primary { background: #1a73e8; color: white; }
+  .btn-primary:hover { background: #1557b0; }
+  .btn-outline { background: transparent; border: 1px solid #dadce0; color: #202124; }
+  .btn-outline:hover { background: #f8f9fa; }
+  .btn-sm { padding: 6px 14px; font-size: 13px; }
+  
   .sports {
     display: flex;
     flex-wrap: wrap;

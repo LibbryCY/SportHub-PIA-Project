@@ -1,6 +1,14 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, sans-serif; background: #f8f9fa; color: #202124; }
-.container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+.main-content {
+  flex: 1; padding: 24px 16px;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* 100% visine tvog ekrana */
+}
 a { text-decoration: none; }
 
 /* Responsive */

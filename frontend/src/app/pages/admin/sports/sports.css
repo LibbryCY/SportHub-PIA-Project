@@ -1,0 +1,21 @@
+.admin-page { padding: 24px 0; }
+.admin-page h1 { font-size: 26px; margin-bottom: 20px; }
+.card { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 20px; }
+.add-form { display: flex; gap: 10px; margin-bottom: 20px; }
+.form-control { flex: 1; padding: 9px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; }
+.form-control:focus { outline: none; border-color: #1a73e8; }
+
+.sports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.sport-card { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+.sport-card span { font-weight: 500; }
+
+.btn { display: inline-flex; align-items: center; padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
+.btn-primary { background: #1a73e8; color: white; }
+.btn-primary:hover { background: #1557b0; }
+.btn-danger { background: #dc3545; color: white; }
+.btn-danger:hover { background: #b02a37; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+.alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+.alert-success { background: #d1e7dd; color: #0a3622; }
+.alert-error { background: #fce8e6; color: #c5221f; }

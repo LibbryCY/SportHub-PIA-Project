@@ -61,14 +61,19 @@
               <p class="address">{{ f.address }}</p>
   
               <div class="meta">
-                <span>💰 {{ f.pricePerHour }} RSD / sat</span>
-                <span>🏟️ {{ f.courts?.length || 0 }} terena/hala</span>
+                <span> {{ f.pricePerHour }} RSD / sat</span>
+                <span> {{ f.courts?.length || 0 }} terena/hala</span>
               </div>
   
               <div class="sports">
                 @for (s of f.sports; track s._id) {
                   <span class="tag">{{ s.name }}</span>
                 }
+              </div>
+
+              <div class="reactions">
+                <button class="btn btn-primary" (click)="resetFilters()"><span>Like </span></button> 
+                <button class="btn btn-primary" (click)="resetFilters()"><span>Dislike </span></button>
               </div>
   
               <div class="footer">

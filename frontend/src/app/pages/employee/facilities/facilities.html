@@ -1,1 +1,172 @@
-<p>facilities works!</p>
+<div class="facilities-page">
+    <div class="page-header">
+      <h2>Moji objekti</h2>
+      @if (mode === 'list') {
+        <div class="header-actions">
+          <button class="btn btn-outline" (click)="mode = 'json'"> Uvezi iz JSON</button>
+          <button class="btn btn-primary" (click)="startNew()">+ Novi objekat</button>
+        </div>
+      }
+    </div>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    <!-- LISTA -->
+    @if (mode === 'list') {
+      @if (facilities.length === 0) {
+        <div class="empty">Nemate dodatih objekata.</div>
+      } @else {
+        <div class="cards-grid">
+          @for (f of facilities; track f._id) {
+            <div class="facility-card">
+              <div class="card-top">
+                <h3>{{ f.name }}</h3>
+                <span class="badge-status status-{{ f.status }}">{{ statusLabel(f.status) }}</span>
+              </div>
+              <p> {{ f.city }}, {{ f.address }}</p>
+              <p> {{ f.pricePerHour }} RSD/sat</p>
+              <p> {{ f.courts?.length || 0 }} terena/hala</p>
+              <div class="tags">
+                @for (s of f.sports; track s._id) { <span class="tag">{{ s.name }}</span> }
+              </div>
+              <button class="btn btn-outline btn-sm" (click)="startEdit(f)">Uredi</button>
+            </div>
+          }
+        </div>
+      }
+    }
+  
+    <!-- JSON UVOZ -->
+    @if (mode === 'json') {
+      <div class="card form-card">
+        <h3>Uvoz objekta iz JSON fajla</h3>
+        <p class="hint">JSON fajl treba da sadrži iste podatke kao forma: name, city, address, pricePerHour, workingHours, maxNoShows, description, sports (niz ID-jeva), courts (niz objekata sa name, type, capacity, sports, equipment).</p>
+        <input type="file" accept=".json,application/json" (change)="onJsonSelected($event)" class="form-control">
+        <div class="btn-row">
+          <button class="btn btn-primary" (click)="importJson()">Uvezi</button>
+          <button class="btn btn-outline" (click)="mode = 'list'">Otkaži</button>
+        </div>
+      </div>
+    }
+  
+    <!-- FORMA -->
+    @if (mode === 'form') {
+      <div class="card form-card">
+        <h3>{{ editingId ? 'Uredi objekat' : 'Novi objekat' }}</h3>
+  
+        <div class="form-section-title">Osnovni podaci</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Naziv objekta *</label>
+            <input class="form-control" [(ngModel)]="form.name">
+          </div>
+          <div class="form-group">
+            <label>Grad *</label>
+            <input class="form-control" [(ngModel)]="form.city">
+          </div>
+          <div class="form-group">
+            <label>Adresa *</label>
+            <input class="form-control" [(ngModel)]="form.address">
+          </div>
+          <div class="form-group">
+            <label>Cena po satu (RSD) *</label>
+            <input class="form-control" type="number" [(ngModel)]="form.pricePerHour">
+          </div>
+          <div class="form-group">
+            <label>Radno vreme od</label>
+            <input class="form-control" type="time" [(ngModel)]="form.workingHours.open">
+          </div>
+          <div class="form-group">
+            <label>Radno vreme do</label>
+            <input class="form-control" type="time" [(ngModel)]="form.workingHours.close">
+          </div>
+          <div class="form-group">
+            <label>Dozvoljeni broj nedolazaka pre blokade</label>
+            <input class="form-control" type="number" [(ngModel)]="form.maxNoShows">
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label>Opis</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="form.description"></textarea>
+        </div>
+  
+        <div class="form-group">
+          <label>Slike objekta</label>
+          <input type="file" multiple accept="image/*" (change)="onImagesSelected($event)" class="form-control">
+          @if (imagePreviews.length > 0) {
+            <div class="image-previews">
+              @for (img of imagePreviews; track img) {
+                <img [src]="img" alt="Preview">
+              }
+            </div>
+          }
+        </div>
+  
+        <div class="form-section-title">Sportovi koji se nude</div>
+        <div class="sports-grid">
+          @for (s of sports; track s._id) {
+            <div class="sport-chip" [class.selected]="isSportSelected(s._id)" (click)="toggleSport(s._id)">
+              {{ s.name }}
+            </div>
+          }
+        </div>
+  
+        <div class="form-section-title">
+          Tereni / hale / dvorane
+          <button class="btn btn-outline btn-sm" (click)="addCourt()" style="float:right">+ Dodaj teren</button>
+        </div>
+  
+        @if (form.courts.length === 0) {
+          <div class="hint">Dodajte bar jedan otvoreni teren sa kapacitetom od najmanje 4 mesta.</div>
+        }
+  
+        @for (court of form.courts; track $index; let i = $index) {
+          <div class="court-form">
+            <div class="court-form-header">
+              <strong>Teren #{{ i + 1 }}</strong>
+              <button class="btn-remove" (click)="removeCourt(i)">✕</button>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Naziv *</label>
+                <input class="form-control" [(ngModel)]="court.name">
+              </div>
+              <div class="form-group">
+                <label>Tip *</label>
+                <select class="form-control" [(ngModel)]="court.type">
+                  <option value="outdoor">Otvoreni</option>
+                  <option value="indoor">Zatvoreni</option>
+                  <option value="hall">Dvorana</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Kapacitet *</label>
+                <input class="form-control" type="number" [(ngModel)]="court.capacity">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Opis opreme (do 300 karaktera)</label>
+              <textarea class="form-control" rows="2" maxlength="300" [(ngModel)]="court.equipment"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Sportovi na ovom terenu</label>
+              <div class="sports-grid">
+                @for (s of sports; track s._id) {
+                  <div class="sport-chip small" [class.selected]="isCourtSportSelected(court, s._id)" (click)="toggleCourtSport(court, s._id)">
+                    {{ s.name }}
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+  
+        <div class="btn-row">
+          <button class="btn btn-primary" (click)="save()">Sačuvaj objekat</button>
+          <button class="btn btn-outline" (click)="mode = 'list'">Otkaži</button>
+        </div>
+      </div>
+    }
+  </div>

@@ -1,1 +1,111 @@
-<p>trainers works!</p>
+<div class="trainers-page">
+    <h2 class="page-title"> Individualni trening</h2>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    <!-- FILTERI -->
+    <div class="card filter-card">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label>Sport</label>
+          <select class="form-control" [(ngModel)]="filterSport" (change)="loadTrainers()">
+            <option value="">Svi sportovi</option>
+            @for (s of sports; track s._id) {
+              <option [value]="s._id">{{ s.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Objekat</label>
+          <select class="form-control" [(ngModel)]="filterFacility" (change)="loadTrainers()">
+            <option value="">Svi objekti</option>
+            @for (f of facilities; track f._id) {
+              <option [value]="f._id">{{ f.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+  
+    <!-- LISTA TRENERA -->
+    @if (trainers.length === 0) {
+      <div class="empty">Nema dostupnih trenera.</div>
+    } @else {
+      <div class="trainers-grid">
+        @for (t of trainers; track t._id) {
+          <div class="trainer-card">
+            <div class="trainer-avatar">{{ t.firstName[0] }}{{ t.lastName[0] }}</div>
+            <div class="trainer-info">
+              <h4>{{ t.firstName }} {{ t.lastName }}</h4>
+              <p class="specialization">{{ t.specialization }}</p>
+              <p class="sport">{{ t.sport?.name }}</p>
+              <p class="facility"> {{ t.facility?.name }}</p>
+              <div class="trainer-meta">
+                <span class="rating">{{ avgRating(t) }}</span>
+                <span class="price">{{ t.pricePerHour }} RSD/sat</span>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" (click)="openBookForm(t)">Zakaži</button>
+          </div>
+        }
+      </div>
+    }
+  
+    <!-- FORMA ZA ZAKAZIVANJE -->
+    @if (showBookForm && selectedTrainer) {
+      <div class="modal-overlay" (click)="showBookForm = false">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+          <h3>Zakaži trening — {{ selectedTrainer.firstName }} {{ selectedTrainer.lastName }}</h3>
+          <p class="modal-sub">{{ selectedTrainer.pricePerHour }} RSD/sat · {{ selectedTrainer.sport?.name }}</p>
+  
+          <div class="form-group">
+            <label>Početak treninga</label>
+            <input class="form-control" type="datetime-local" [(ngModel)]="bookForm.startTime">
+          </div>
+          <div class="form-group">
+            <label>Kraj treninga</label>
+            <input class="form-control" type="datetime-local" [(ngModel)]="bookForm.endTime">
+          </div>
+  
+          <div class="btn-row">
+            <button class="btn btn-primary" (click)="bookTraining()">Zakaži</button>
+            <button class="btn btn-outline" (click)="showBookForm = false">Otkaži</button>
+          </div>
+        </div>
+      </div>
+    }
+  
+    <!-- MOJI TRENINZI -->
+    <div class="card" style="margin-top: 24px">
+      <h3>Moji treninzi</h3>
+      @if (trainings.length === 0) {
+        <div class="empty-sm">Nemate zakazanih treninga.</div>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Trener</th>
+                <th>Objekat</th>
+                <th>Početak</th>
+                <th>Kraj</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of trainings; track t._id) {
+                <tr>
+                  <td>{{ t.trainer?.firstName }} {{ t.trainer?.lastName }}</td>
+                  <td>{{ t.facility?.name }}</td>
+                  <td>{{ t.startTime | date:'dd.MM.yyyy HH:mm' }}</td>
+                  <td>{{ t.endTime | date:'HH:mm' }}</td>
+                  <td><span class="badge badge-{{ t.status }}">{{ trainingStatusLabel(t.status) }}</span></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>

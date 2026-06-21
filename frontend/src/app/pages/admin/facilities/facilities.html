@@ -1,1 +1,59 @@
-<p>facilities works!</p>
+<div class="admin-page">
+    <h1>Upravljanje objektima</h1>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    <div class="tabs">
+      <button class="tab" [class.active]="activeTab === 'pending'" (click)="activeTab = 'pending'">
+        Na čekanju
+        @if (pending.length > 0) { <span class="badge">{{ pending.length }}</span> }
+      </button>
+      <button class="tab" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">Svi objekti</button>
+    </div>
+  
+    @if (activeTab === 'pending') {
+      @if (pending.length === 0) {
+        <div class="empty">Nema objekata na čekanju</div>
+      } @else {
+        <div class="cards-grid">
+          @for (f of pending; track f._id) {
+            <div class="facility-card">
+              <h3>{{ f.name }}</h3>
+              <p> {{ f.city }}, {{ f.address }}</p>
+              <p> Vlasnik: {{ f.owner?.firstName }} {{ f.owner?.lastName }} ({{ f.owner?.email }})</p>
+              <p> {{ f.pricePerHour }} RSD/sat</p>
+              <p> {{ f.courts?.length || 0 }} terena/hala</p>
+              <div class="tags">
+                @for (s of f.sports; track s._id) { <span class="tag">{{ s.name }}</span> }
+              </div>
+              <div class="card-actions">
+                <button class="btn btn-success btn-sm" (click)="approve(f._id)"> Odobri</button>
+                <button class="btn btn-danger btn-sm" (click)="reject(f._id)"> Odbij</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  
+    @if (activeTab === 'all') {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Naziv</th><th>Grad</th><th>Vlasnik</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            @for (f of all; track f._id) {
+              <tr>
+                <td>{{ f.name }}</td>
+                <td>{{ f.city }}</td>
+                <td>{{ f.owner?.firstName }} {{ f.owner?.lastName }}</td>
+                <td><span class="badge-status status-{{ f.status }}">{{ statusLabel(f.status) }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>

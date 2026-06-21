@@ -20,10 +20,10 @@ export const routes: Routes = [
     children: [
       { path: 'profile', loadComponent: () => import('./pages/athlete/profile/profile').then(m => m.AthleteProfile) },
       { path: 'search', loadComponent: () => import('./pages/athlete/search/search').then(m => m.AthleteSearch) },
-      { path: 'ads', loadComponent: () => import('./pages/athlete/ads/ads').then(m => m.Ads) },
-      { path: 'trainers', loadComponent: () => import('./pages/athlete/trainers/trainers').then(m => m.Trainers) },
-      { path: 'shop', loadComponent: () => import('./pages/athlete/shop/shop').then(m => m.Shop) },
-      { path: 'statistics', loadComponent: () => import('./pages/athlete/statistics/statistics').then(m => m.Statistics) },
+      { path: 'ads', loadComponent: () => import('./pages/athlete/ads/ads').then(m => m.AthleteAds) },
+      { path: 'trainers', loadComponent: () => import('./pages/athlete/trainers/trainers').then(m => m.AthleteTrainers) },
+      { path: 'shop', loadComponent: () => import('./pages/athlete/shop/shop').then(m => m.AthleteShop) },
+      { path: 'statistics', loadComponent: () => import('./pages/athlete/statistics/statistics').then(m => m.AthleteStatistics) },
     ]
   },
   {
@@ -31,8 +31,8 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'employee' },
     children: [
-      { path: 'profile', loadComponent: () => import('./pages/employee/profile/profile').then(m => m.Profile) },
-      { path: 'facilities', loadComponent: () => import('./pages/employee/facilities/facilities').then(m => m.Facilities) },
+      { path: 'profile', loadComponent: () => import('./pages/employee/profile/profile').then(m => m.EmployeeProfile) },
+      { path: 'facilities', loadComponent: () => import('./pages/employee/facilities/facilities').then(m => m.EmployeeFacilities) },
       { path: 'reservations', loadComponent: () => import('./pages/employee/reservations/reservations').then(m => m.Reservations) },
       { path: 'calendar', loadComponent: () => import('./pages/employee/calendar/calendar').then(m => m.Calendar) },
       { path: 'promotions', loadComponent: () => import('./pages/employee/promotions/promotions').then(m => m.Promotions) },

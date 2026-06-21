@@ -1,0 +1,20 @@
+.stats-page { padding: 24px 0; }
+.page-title { font-size: 24px; font-weight: 700; margin-bottom: 24px; }
+
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.summary-card { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 24px; text-align: center; }
+.summary-icon { font-size: 32px; margin-bottom: 8px; }
+.summary-value { font-size: 28px; font-weight: 700; color: #1a73e8; margin-bottom: 4px; }
+.summary-label { font-size: 13px; color: #5f6368; }
+
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.card { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 24px; }
+.chart-card h3 { font-size: 16px; margin-bottom: 16px; }
+.chart-card.wide { grid-column: 1 / -1; }
+
+.empty { padding: 60px; text-align: center; color: #5f6368; }
+
+@media (max-width: 768px) {
+  .charts-grid { grid-template-columns: 1fr; }
+  .chart-card.wide { grid-column: 1; }
+}

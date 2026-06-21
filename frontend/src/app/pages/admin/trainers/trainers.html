@@ -1,1 +1,74 @@
-<p>trainers works!</p>
+<div class="admin-page">
+    <div class="page-header">
+      <h1>Evidencija trenera</h1>
+      <button class="btn btn-primary" (click)="showForm = !showForm">
+        {{ showForm ? '✕ Zatvori' : '+ Novi trener' }}
+      </button>
+    </div>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    @if (showForm) {
+      <div class="card form-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Ime *</label>
+            <input class="form-control" [(ngModel)]="newTrainer.firstName">
+          </div>
+          <div class="form-group">
+            <label>Prezime *</label>
+            <input class="form-control" [(ngModel)]="newTrainer.lastName">
+          </div>
+          <div class="form-group">
+            <label>Objekat *</label>
+            <select class="form-control" [(ngModel)]="newTrainer.facility">
+              <option value="">Odaberi objekat</option>
+              @for (f of facilities; track f._id) { <option [value]="f._id">{{ f.name }}</option> }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sport *</label>
+            <select class="form-control" [(ngModel)]="newTrainer.sport">
+              <option value="">Odaberi sport</option>
+              @for (s of sports; track s._id) { <option [value]="s._id">{{ s.name }}</option> }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Specijalizacija</label>
+            <input class="form-control" [(ngModel)]="newTrainer.specialization">
+          </div>
+          <div class="form-group">
+            <label>Cena po satu (RSD)</label>
+            <input class="form-control" type="number" [(ngModel)]="newTrainer.pricePerHour">
+          </div>
+        </div>
+        <button class="btn btn-primary" (click)="addTrainer()">Sačuvaj trenera</button>
+      </div>
+    }
+  
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Ime</th><th>Objekat</th><th>Sport</th><th>Cena/sat</th><th>Ocena</th><th>Status</th><th>Akcija</th></tr>
+        </thead>
+        <tbody>
+          @for (t of trainers; track t._id) {
+            <tr>
+              <td>{{ t.firstName }} {{ t.lastName }}</td>
+              <td>{{ t.facility?.name }}</td>
+              <td>{{ t.sport?.name }}</td>
+              <td>{{ t.pricePerHour }} RSD</td>
+              <td>{{ avgRating(t) }}</td>
+              <td><span class="badge" [class.active]="t.isActive">{{ t.isActive ? 'Aktivan' : 'Neaktivan' }}</span></td>
+              <td>
+                @if (t.isActive) {
+                  <button class="btn btn-danger btn-sm" (click)="deactivate(t._id)">Deaktiviraj</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>

@@ -1,1 +1,112 @@
-<p>shop works!</p>
+<div class="shop-page">
+    <div class="page-header">
+      <h2> Prodavnica opreme</h2>
+      <div class="tabs">
+        <button class="tab" [class.active]="activeTab === 'shop'" (click)="activeTab = 'shop'">Katalog</button>
+        <button class="tab" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'">
+          Moje porudžbine
+          @if (orders.length > 0) { <span class="badge">{{ orders.length }}</span> }
+        </button>
+      </div>
+    </div>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    <!-- KATALOG -->
+    @if (activeTab === 'shop') {
+      <div class="shop-layout">
+        <div class="catalog-section">
+          <div class="filter-row">
+            <select class="form-control filter-select" [(ngModel)]="filterSport" (change)="loadEquipment()">
+              <option value="">Svi sportovi</option>
+              @for (s of sports; track s._id) {
+                <option [value]="s._id">{{ s.name }}</option>
+              }
+            </select>
+          </div>
+  
+          @if (equipment.length === 0) {
+            <div class="empty">Nema dostupne opreme.</div>
+          } @else {
+            <div class="equipment-grid">
+              @for (item of equipment; track item._id) {
+                <div class="eq-card">
+                  
+                  <div class="eq-info">
+                    <h4>{{ item.name }}</h4>
+                    <p class="eq-sport">{{ item.sport?.name }}</p>
+                    <p class="eq-price">{{ item.price }} RSD</p>
+                    <p class="eq-stock" [class.low]="item.stock < 3">
+                      Na stanju: {{ item.stock }}
+                    </p>
+                  </div>
+                  <button class="btn btn-primary btn-sm"
+                    [disabled]="item.stock === 0"
+                    (click)="addToCart(item)">
+                    {{ item.stock === 0 ? 'Nema na stanju' : '+ Dodaj u korpu' }}
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+  
+        <!-- KORPA -->
+        <div class="cart-section">
+          <div class="card cart-card">
+            <h3>Korpa</h3>
+            @if (cart.length === 0) {
+              <p class="empty-cart">Korpa je prazna</p>
+            } @else {
+              @for (item of cart; track item.equipment; let i = $index) {
+                <div class="cart-item">
+                  <div class="cart-item-info">
+                    <span class="cart-name">{{ item.name }}</span>
+                    <span class="cart-price">{{ item.price }} RSD</span>
+                  </div>
+                  <div class="cart-controls">
+                    <button class="qty-btn" (click)="quantityDec(item)">−</button>
+                    <span class="qty">{{ item.quantity }}</span>
+                    <button class="qty-btn" (click)="quantityInc(item)">+</button>
+                    <button class="remove-btn" (click)="removeFromCart(i)">Remove</button>
+                  </div>
+                </div>
+              }
+              <div class="cart-total">
+                <strong>Ukupno: {{ cartTotal }} RSD</strong>
+              </div>
+              <button class="btn btn-primary btn-full" (click)="placeOrder()">Naruči</button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  
+    <!-- PORUDŽBINE -->
+    @if (activeTab === 'orders') {
+      @if (orders.length === 0) {
+        <div class="empty">Nemate porudžbina.</div>
+      } @else {
+        <div class="orders-list">
+          @for (order of orders; track order._id) {
+            <div class="order-card">
+              <div class="order-header">
+                <span class="badge badge-{{ order.status }}">{{ orderStatusLabel(order.status) }}</span>
+                <span class="order-date">{{ order.createdAt | date:'dd.MM.yyyy' }}</span>
+                <strong class="order-total">{{ order.totalPrice }} RSD</strong>
+              </div>
+              <div class="order-items">
+                @for (item of order.items; track item.equipment) {
+                  <span class="order-item">{{ item.name }} x{{ item.quantity }}</span>
+                }
+              </div>
+              @if (order.status === 'ordered') {
+                <button class="btn btn-danger btn-sm" (click)="cancelOrder(order._id)">Otkaži porudžbinu</button>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>

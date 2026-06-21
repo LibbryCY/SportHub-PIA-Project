@@ -19,8 +19,8 @@
             }
           </div>
           <div class="reactions">
-            <span>👍 {{ f.likes }}</span>
-            <span>👎 {{ f.dislikes }}</span>
+            <button class="btn btn-primary" (click)="search()"><span>Like {{ f.likes }}</span></button>
+            <button class="btn btn-primary" (click)="search()"><span>Dislike {{ f.dislikes }}</span></button>
           </div>
           <a [routerLink]="['/facilities', f._id]" class="btn btn-primary btn-sm">Detalji</a>
         </div>
@@ -47,7 +47,7 @@
   }
   
   <section class="section">
-    <h2 class="section-title">🔍 Pretraži Objekte</h2>
+    <h2 class="section-title"> Pretraži Objekte</h2>
     <div class="card search-card">
       <div class="search-grid">
         <div class="form-group">

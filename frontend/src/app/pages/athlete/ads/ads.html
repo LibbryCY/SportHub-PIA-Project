@@ -1,1 +1,122 @@
-<p>ads works!</p>
+<div class="ads-page">
+    <div class="page-header">
+      <h2> Saigrači</h2>
+      <button class="btn btn-primary" (click)="showForm = !showForm">
+        {{ showForm ? '✕ Zatvori' : '+ Novi oglas' }}
+      </button>
+    </div>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    <!-- FORMA ZA NOVI OGLAS -->
+    @if (showForm) {
+      <div class="card form-card">
+        <h3>Novi oglas — tražim saaigrače</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Sport *</label>
+            <select class="form-control" [(ngModel)]="newAd.sport">
+              <option value="">Odaberi sport</option>
+              @for (s of sports; track s._id) {
+                <option [value]="s._id">{{ s.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Grad *</label>
+            <select class="form-control" [(ngModel)]="newAd.city">
+              <option value="">Odaberi grad</option>
+              @for (c of cities; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Datum *</label>
+            <input class="form-control" type="date" [(ngModel)]="newAd.date">
+          </div>
+          <div class="form-group">
+            <label>Termin *</label>
+            <input class="form-control" [(ngModel)]="newAd.timeSlot" placeholder="npr. 18:00-20:00">
+          </div>
+          <div class="form-group">
+            <label>Broj nedostajućih igrača *</label>
+            <input class="form-control" type="number" [(ngModel)]="newAd.playersNeeded" min="1" max="20">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" (click)="createAd()">Objavi oglas</button>
+          <button class="btn btn-outline" (click)="showForm = false">Otkaži</button>
+        </div>
+      </div>
+    }
+  
+    <!-- LISTA OGLASA -->
+    @if (loading) {
+      <div class="empty">Učitavanje...</div>
+    } @else if (ads.length === 0) {
+      <div class="empty">Nema aktivnih oglasa.</div>
+    } @else {
+      <div class="ads-grid">
+        @for (ad of ads; track ad._id) {
+          <div class="ad-card" [class.my-ad]="isMyAd(ad)">
+            <div class="ad-header">
+              <span class="sport-badge">{{ ad.sport?.name }}</span>
+              @if (isMyAd(ad)) {
+                <span class="my-badge">Moj oglas</span>
+              }
+            </div>
+  
+            <div class="ad-info">
+              <p> {{ ad.city }}</p>
+              <p> {{ ad.date | date:'dd.MM.yyyy' }}</p>
+              <p> {{ ad.timeSlot }}</p>
+              <p> Traži se još: <strong>{{ ad.playersNeeded - approvedCount(ad) }}</strong> igrača</p>
+              <p> Objavio: {{ ad.author?.firstName }} {{ ad.author?.lastName }}</p>
+            </div>
+  
+            <!-- Dugmad za moje oglase -->
+            @if (isMyAd(ad)) {
+              <div class="my-ad-actions">
+                <button class="btn btn-danger btn-sm" (click)="closeAd(ad._id)">Zatvori oglas</button>
+  
+                @if (ad.requests?.length > 0) {
+                  <div class="requests-section">
+                    <h4>Zahtevi ({{ ad.requests.length }})</h4>
+                    @for (req of ad.requests; track req._id) {
+                      <div class="request-item" [class]="'req-' + req.status">
+                        <span>{{ req.user?.firstName }} {{ req.user?.lastName }}</span>
+                        <span class="req-status">{{ req.status }}</span>
+                        @if (req.status === 'pending') {
+                          <button class="btn btn-success btn-xs" (click)="approveRequest(ad._id, req.user?._id || req.user)">✓</button>
+                          <button class="btn btn-danger btn-xs" (click)="rejectRequest(ad._id, req.user?._id || req.user)">✕</button>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+  
+            <!-- Dugme za pridruživanje -->
+            @if (!isMyAd(ad)) {
+              <div class="join-section">
+                @if (!hasJoined(ad)) {
+                  <button class="btn btn-primary btn-sm" (click)="joinAd(ad._id)">
+                    Pošalji zahtev
+                  </button>
+                } @else {
+                  <span class="join-status" [class]="'status-' + myRequestStatus(ad)">
+                    @if (myRequestStatus(ad) === 'pending') {  Čeka se odobrenje }
+                    @if (myRequestStatus(ad) === 'approved') {  Odobren }
+                    @if (myRequestStatus(ad) === 'rejected') {  Odbijen }
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>

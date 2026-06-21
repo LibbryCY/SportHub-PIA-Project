@@ -1,1 +1,89 @@
-<p>profile works!</p>
+<div class="profile-page">
+    @if (loading) {
+      <div class="state">Učitavanje...</div>
+    } @else if (user) {
+  
+      @if (message) { <div class="alert alert-success">{{ message }}</div> }
+      @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+      <!-- PROFIL -->
+      <div class="card profile-card">
+        <div class="profile-header">
+          <div class="avatar-wrap">
+            <img [src]="profileImagePreview || getImageUrl(user.profileImage)" alt="Avatar">
+          </div>
+          <div>
+            <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+            <p class="username">&#64;{{ user.username }}</p>
+            <p class="email">{{ user.email }}</p>
+          </div>
+          @if (!editMode) {
+            <button class="btn btn-outline btn-sm ml-auto" (click)="editMode = true"> Uredi profil</button>
+          }
+        </div>
+  
+        @if (!editMode) {
+          <div class="info-grid">
+            <div><span class="label">Telefon</span><span>{{ user.phone }}</span></div>
+            <div><span class="label">Uloga</span><span>Zaposleni</span></div>
+          </div>
+        }
+  
+        @if (editMode) {
+          <div class="edit-form">
+            <div class="form-grid">
+              <div class="form-group"><label>Ime</label><input class="form-control" [(ngModel)]="editForm.firstName"></div>
+              <div class="form-group"><label>Prezime</label><input class="form-control" [(ngModel)]="editForm.lastName"></div>
+              <div class="form-group"><label>Telefon</label><input class="form-control" [(ngModel)]="editForm.phone"></div>
+              <div class="form-group"><label>Email</label><input class="form-control" type="email" [(ngModel)]="editForm.email"></div>
+            </div>
+            <div class="form-group">
+              <label>Profilna slika</label>
+              <div class="image-row">
+                <img class="img-preview" [src]="profileImagePreview || getImageUrl(user.profileImage)" alt="Preview">
+                <label class="btn btn-outline btn-sm" for="editFileInput">📁 Promeni sliku</label>
+                <input id="editFileInput" type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none">
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" (click)="saveProfile()"> Sačuvaj</button>
+              <button class="btn btn-outline" (click)="cancelEdit()">Otkaži</button>
+            </div>
+          </div>
+        }
+      </div>
+  
+      <!-- OBJEKTI -->
+      <div class="card">
+        <div class="card-header-row">
+          <h3>Moji objekti</h3>
+          <a routerLink="/employee/facilities" class="btn btn-primary btn-sm">+ Novi objekat</a>
+        </div>
+  
+        @if (facilities.length === 0) {
+          <div class="empty">Nemate dodatih objekata. Dodajte prvi objekat.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Naziv</th><th>Grad</th><th>Sportovi</th><th>Tereni/hale</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                @for (f of facilities; track f._id) {
+                  <tr>
+                    <td>{{ f.name }}</td>
+                    <td>{{ f.city }}</td>
+                    <td>
+                      @for (s of f.sports; track s._id) { <span class="tag">{{ s.name }}</span> }
+                    </td>
+                    <td>{{ totalCourts(f) }}</td>
+                    <td><span class="badge-status status-{{ f.status }}">{{ statusLabel(f.status) }}</span></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  </div>

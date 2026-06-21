@@ -27,6 +27,13 @@ export class ApiService {
     return this.http.get<string[]>(`${this.base}/facilities/cities`);
   }
 
+  reactToFacility(id: string, reaction: string): Observable<any> {
+    return this.http.post<any>(`${this.base}/facilities/${id}/react`, { reaction });
+  }
+  addComment(id: string, text: string, reaction: string): Observable<any> {
+    return this.http.post<any>(`${this.base}/facilities/${id}/comment`, { text, reaction });
+  }
+
   // Promotions
   getPromotions(limit?: number): Observable<any[]> {
     let p = new HttpParams();
@@ -132,6 +139,10 @@ export class ApiService {
     return this.http.patch<any>(`${this.base}/ads/${id}/close`, {});
   }
 
+  approveAdRequest(adId: string, userId: string, status: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/ads/${adId}/requests/${userId}`, { status });
+  }
+
   // Trainers
   getTrainers(params?: any): Observable<any[]> {
     let p = new HttpParams();
@@ -144,4 +155,54 @@ export class ApiService {
   scheduleTraining(data: any): Observable<any> {
     return this.http.post<any>(`${this.base}/trainers/trainings`, data);
   }
+
+  // Admin
+  approveFacility(id: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/facilities/${id}/approve`, {});
+  }
+  rejectFacility(id: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/facilities/${id}/reject`, {});
+  }
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.base}/users/${id}`);
+  }
+  updateUser(id: string, data: any): Observable<any> {
+    return this.http.patch<any>(`${this.base}/users/${id}`, data);
+  }
+  deactivateTrainer(id: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/trainers/${id}/deactivate`, {});
+  }
+  createTrainer(data: any): Observable<any> {
+    return this.http.post<any>(`${this.base}/trainers`, data);
+  }
+  deactivateSport(id: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/sports/${id}/deactivate`, {});
+  }
+  createSport(name: string): Observable<any> {
+    return this.http.post<any>(`${this.base}/sports`, { name });
+  }
+  getAllFacilities(status?: string): Observable<any[]> {
+    let p = new HttpParams();
+    if (status) p = p.set('status', status);
+    return this.http.get<any[]>(`${this.base}/facilities/admin/all`, { params: p });
+
+
+  }
+// Employee
+createFacility(formData: FormData): Observable<any> {
+  return this.http.post<any>(`${this.base}/facilities`, formData);
 }
+importFacilityJson(formData: FormData): Observable<any> {
+  return this.http.post<any>(`${this.base}/facilities/import-json`, formData);
+}
+updateFacility(id: string, formData: FormData): Observable<any> {
+  return this.http.put<any>(`${this.base}/facilities/${id}`, formData);
+}
+getMyFacilities(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.base}/facilities/my/list`);
+}
+
+}
+
+  
+

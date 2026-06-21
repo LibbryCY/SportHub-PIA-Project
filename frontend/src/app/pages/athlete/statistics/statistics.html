@@ -1,1 +1,39 @@
-<p>statistics works!</p>
+<div class="stats-page">
+    <h2 class="page-title">Moja statistika</h2>
+  
+    @if (loading) {
+      <div class="empty">Učitavanje...</div>
+    } @else {
+      <!-- SUMMARY KARTICE -->
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-value">{{ totalReservations }}</div>
+          <div class="summary-label">Ukupno rezervacija</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value">{{ confirmedReservations }}</div>
+          <div class="summary-label">Potvrđenih rezervacija</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-value">{{ totalSpend }} RSD</div>
+          <div class="summary-label">Ukupna potrošnja na opremu</div>
+        </div>
+      </div>
+  
+      <!-- DIJAGRAMI -->
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <h3>Rezervacije po sportu</h3>
+          <canvas #sportChart></canvas>
+        </div>
+        <div class="card chart-card">
+          <h3>Mesečna aktivnost</h3>
+          <canvas #monthChart></canvas>
+        </div>
+        <div class="card chart-card wide">
+          <h3>Potrošnja na opremu po mesecu</h3>
+          <canvas #spendChart></canvas>
+        </div>
+      </div>
+    }
+  </div>
