@@ -89,6 +89,8 @@ const trainingSchema = new mongoose.Schema({
   athlete: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   trainer: { type: mongoose.Schema.Types.ObjectId, ref: "Trainer" },
   facility: { type: mongoose.Schema.Types.ObjectId, ref: "Facility" },
+  court: { type: mongoose.Schema.Types.ObjectId },
+  courtName: String,
   startTime: Date,
   endTime: Date,
   status: {

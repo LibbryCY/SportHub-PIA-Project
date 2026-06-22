@@ -21,7 +21,9 @@ export class AthleteTrainers implements OnInit {
 
   showBookForm = false;
   selectedTrainer: any = null;
-  bookForm = { startTime: '', endTime: '', facilityId: '' };
+  courts: any[] = [];
+  bookForm = { startTime: '', endTime: '', facilityId: '', courtId: '', courtName: '' };
+  
 
   message = '';
   error = '';
@@ -53,7 +55,19 @@ export class AthleteTrainers implements OnInit {
   openBookForm(trainer: any) {
     this.selectedTrainer = trainer;
     this.showBookForm = true;
-    this.bookForm = { startTime: '', endTime: '', facilityId: trainer.facility?._id || '' };
+    this.bookForm = { startTime: '', endTime: '', facilityId: trainer.facility?._id || '', courtId: '', courtName: '' };
+
+    this.courts = trainer.facility?.courts || [];
+    if (!this.courts.length && trainer.facility?._id) {
+    this.api.getFacility(trainer.facility._id).subscribe({
+      next: (f) => { this.courts = f.courts || []; this.cdr.detectChanges(); }
+    });
+  }
+  }
+
+  onCourtChange() {
+    const court = this.courts.find((c: any) => c._id === this.bookForm.courtId);
+    this.bookForm.courtName = court?.name || '';
   }
 
   bookTraining() {
@@ -61,9 +75,15 @@ export class AthleteTrainers implements OnInit {
       this.error = 'Unesite vreme treninga';
       return;
     }
+    if (!this.bookForm.courtId) {
+      this.error = 'Odaberite teren/halu';
+      return;
+    }
     const data = {
       trainer: this.selectedTrainer._id,
       facility: this.bookForm.facilityId || this.selectedTrainer.facility?._id,
+      court: this.bookForm.courtId,
+      courtName: this.bookForm.courtName,
       startTime: new Date(this.bookForm.startTime).toISOString(),
       endTime: new Date(this.bookForm.endTime).toISOString()
     };

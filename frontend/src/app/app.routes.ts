@@ -33,26 +33,25 @@ export const routes: Routes = [
     children: [
       { path: 'profile', loadComponent: () => import('./pages/employee/profile/profile').then(m => m.EmployeeProfile) },
       { path: 'facilities', loadComponent: () => import('./pages/employee/facilities/facilities').then(m => m.EmployeeFacilities) },
-      { path: 'reservations', loadComponent: () => import('./pages/employee/reservations/reservations').then(m => m.Reservations) },
-      { path: 'calendar', loadComponent: () => import('./pages/employee/calendar/calendar').then(m => m.Calendar) },
-      { path: 'promotions', loadComponent: () => import('./pages/employee/promotions/promotions').then(m => m.Promotions) },
-      { path: 'reports', loadComponent: () => import('./pages/employee/reports/reports').then(m => m.Reports) },
+      { path: 'reservations', loadComponent: () => import('./pages/employee/reservations/reservations').then(m => m.EmployeeReservations) },
+      { path: 'calendar', loadComponent: () => import('./pages/employee/calendar/calendar').then(m => m.EmployeeCalendar) },
+      { path: 'promotions', loadComponent: () => import('./pages/employee/promotions/promotions').then(m => m.EmployeePromotions) },
+      { path: 'reports', loadComponent: () => import('./pages/employee/reports/reports').then(m => m.EmployeeReports) },
     ]
   },
 
-
-{ path: 'admin-login', loadComponent: () => import('./pages/admin/admin-login/admin-login').then(m => m.AdminLogin) },
-{
-  path: 'admin',
-  canActivate: [AuthGuard, RoleGuard],
-  data: { role: 'admin' },
-  children: [
-    { path: 'users', loadComponent: () => import('./pages/admin/users/users').then(m => m.AdminUsers) },
-    { path: 'facilities', loadComponent: () => import('./pages/admin/facilities/facilities').then(m => m.AdminFacilities) },
-    { path: 'sports', loadComponent: () => import('./pages/admin/sports/sports').then(m => m.AdminSports) },
-    { path: 'trainers', loadComponent: () => import('./pages/admin/trainers/trainers').then(m => m.AdminTrainers) },
-  ]
-},
+  { path: 'admin-login', loadComponent: () => import('./pages/admin/admin-login/admin-login').then(m => m.AdminLogin) },
+  {
+    path: 'admin',
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'admin' },
+    children: [
+      { path: 'users', loadComponent: () => import('./pages/admin/users/users').then(m => m.AdminUsers) },
+      { path: 'facilities', loadComponent: () => import('./pages/admin/facilities/facilities').then(m => m.AdminFacilities) },
+      { path: 'sports', loadComponent: () => import('./pages/admin/sports/sports').then(m => m.AdminSports) },
+      { path: 'trainers', loadComponent: () => import('./pages/admin/trainers/trainers').then(m => m.AdminTrainers) },
+    ]
+  },
 
   { path: '**', redirectTo: '' }
 ];

@@ -31,6 +31,17 @@ router.get(
       if (!facility)
         return res.status(403).json({ message: "Not your facility" });
 
+      // ooznaci kao no-show rezervacije kojima je isteklo 10 minuta od pocetka, a nisu potvrdjene
+      const cutoff = new Date(Date.now() - 10 * 60 * 1000);
+      await Reservation.updateMany(
+        {
+          facility: req.params.facilityId,
+          status: "pending",
+          startTime: { $lt: cutoff },
+        },
+        { $set: { status: "no-show" } }
+      );
+
       const reservations = await Reservation.find({
         facility: req.params.facilityId,
       })
@@ -107,11 +118,10 @@ router.post("/", auth, requireRole("athlete"), async (req, res) => {
       status: "no-show",
     });
     if (noShows >= facility.maxNoShows) {
-      return res
-        .status(403)
-        .json({
-          message: "You are blocked from this facility due to no-shows",
-        });
+      return res.status(403).json({
+        message:
+          "Ne mozes da rezervises termin zbog predjasnjih nepojavljivanja",
+      });
     }
 
     const reservation = new Reservation({
@@ -222,24 +232,40 @@ router.patch("/:id/move", auth, requireRole("employee"), async (req, res) => {
     if (String(reservation.facility.owner) !== String(req.user._id))
       return res.status(403).json({ message: "Not your facility" });
 
+    const newStart = new Date(newStartTime);
+    const newEnd = new Date(newEndTime);
+
+    // Provera radnog vremena objekta
+    const facility = reservation.facility;
+    const [openH, openM] = facility.workingHours.open.split(":").map(Number);
+    const [closeH, closeM] = facility.workingHours.close.split(":").map(Number);
+
+    const dayOpen = new Date(newStart);
+    dayOpen.setHours(openH, openM, 0, 0);
+    const dayClose = new Date(newStart);
+    dayClose.setHours(closeH, closeM, 0, 0);
+
+    if (newStart < dayOpen || newEnd > dayClose) {
+      return res.status(400).json({
+        message: `Termin mora biti unutar radnog vremena objekta (${facility.workingHours.open} - ${facility.workingHours.close})`,
+      });
+    }
+
     // Check for conflicts at new time
     const conflict = await Reservation.findOne({
       _id: { $ne: reservation._id },
       facility: reservation.facility._id,
       court: reservation.court,
       status: { $nin: ["cancelled"] },
-      $or: [
-        {
-          startTime: { $lt: new Date(newEndTime) },
-          endTime: { $gt: new Date(newStartTime) },
-        },
-      ],
+      $or: [{ startTime: { $lt: newEnd }, endTime: { $gt: newStart } }],
     });
     if (conflict)
-      return res.status(409).json({ message: "Conflict at new time slot" });
+      return res
+        .status(409)
+        .json({ message: "Konflikt sa drugim terminom u to vreme" });
 
-    reservation.startTime = new Date(newStartTime);
-    reservation.endTime = new Date(newEndTime);
+    reservation.startTime = newStart;
+    reservation.endTime = newEnd;
     await reservation.save();
     res.json(reservation);
   } catch (err) {

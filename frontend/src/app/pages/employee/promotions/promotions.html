@@ -1,1 +1,161 @@
-<p>promotions works!</p>
+<div class="page">
+    <h2 class="page-title"> Promocije i oprema</h2>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    @if (facilities.length === 0) {
+      <div class="empty">Nemate objekata.</div>
+    } @else {
+      <div class="card filter-card">
+        <div class="form-group">
+          <label>Objekat</label>
+          <select class="form-control" [(ngModel)]="selectedFacilityId" (change)="onFacilityChange()">
+            @for (f of facilities; track f._id) { <option [value]="f._id">{{ f.name }}</option> }
+          </select>
+        </div>
+      </div>
+  
+      <div class="tabs">
+        <button class="tab" [class.active]="activeTab === 'promotions'" (click)="activeTab = 'promotions'">Promocije</button>
+        <button class="tab" [class.active]="activeTab === 'equipment'" (click)="activeTab = 'equipment'">Oprema</button>
+        <button class="tab" [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'">Porudžbine</button>
+      </div>
+  
+      <!-- PROMOCIJE -->
+      @if (activeTab === 'promotions') {
+        <div class="section-header">
+          <button class="btn btn-primary btn-sm" (click)="startNewPromo()">+ Nova promocija</button>
+        </div>
+  
+        @if (showPromoForm) {
+          <div class="card form-card">
+            <div class="form-grid">
+              <div class="form-group"><label>Naziv *</label><input class="form-control" [(ngModel)]="promoForm.name"></div>
+              <div class="form-group">
+                <label>Sport</label>
+                <select class="form-control" [(ngModel)]="promoForm.sport">
+                  <option value="">Svi sportovi</option>
+                  @for (s of sports; track s._id) { <option [value]="s._id">{{ s.name }}</option> }
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Tip popusta</label>
+                <select class="form-control" [(ngModel)]="promoForm.discountType">
+                  <option value="percent">Procenat (%)</option>
+                  <option value="fixed">Fiksni iznos (RSD)</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Vrednost popusta *</label><input class="form-control" type="number" [(ngModel)]="promoForm.discountValue"></div>
+              <div class="form-group"><label>Datum početka *</label><input class="form-control" type="date" [(ngModel)]="promoForm.startDate"></div>
+              <div class="form-group"><label>Datum kraja *</label><input class="form-control" type="date" [(ngModel)]="promoForm.endDate"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" (click)="savePromo()">Sačuvaj</button>
+              <button class="btn btn-outline" (click)="showPromoForm = false">Otkaži</button>
+            </div>
+          </div>
+        }
+  
+        @if (promotions.length === 0) {
+          <div class="empty">Nema promocija za ovaj objekat.</div>
+        } @else {
+          <div class="cards-grid">
+            @for (p of promotions; track p._id) {
+              <div class="promo-card">
+                <div class="promo-discount">{{ discountLabel(p) }}</div>
+                <h4>{{ p.name }}</h4>
+                <p>{{ p.sport?.name || 'Svi sportovi' }}</p>
+                <p class="dates">{{ p.startDate | date:'dd.MM.yyyy' }} – {{ p.endDate | date:'dd.MM.yyyy' }}</p>
+                <button class="btn btn-outline btn-sm" (click)="editPromo(p)"> Uredi</button>
+              </div>
+            }
+          </div>
+        }
+      }
+  
+      <!-- OPREMA -->
+      @if (activeTab === 'equipment') {
+        <div class="section-header">
+          <button class="btn btn-primary btn-sm" (click)="startNewEq()">+ Nova oprema</button>
+        </div>
+  
+        @if (showEqForm) {
+          <div class="card form-card">
+            <div class="form-grid">
+              <div class="form-group"><label>Naziv *</label><input class="form-control" [(ngModel)]="eqForm.name"></div>
+              <div class="form-group">
+                <label>Sport</label>
+                <select class="form-control" [(ngModel)]="eqForm.sport">
+                  <option value="">Bez sporta</option>
+                  @for (s of sports; track s._id) { <option [value]="s._id">{{ s.name }}</option> }
+                </select>
+              </div>
+              <div class="form-group"><label>Cena (RSD) *</label><input class="form-control" type="number" [(ngModel)]="eqForm.price"></div>
+              <div class="form-group"><label>Stanje zaliha *</label><input class="form-control" type="number" [(ngModel)]="eqForm.stock"></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" (click)="saveEq()">Sačuvaj</button>
+              <button class="btn btn-outline" (click)="showEqForm = false">Otkaži</button>
+            </div>
+          </div>
+        }
+  
+        @if (equipment.length === 0) {
+          <div class="empty">Nema opreme za ovaj objekat.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Naziv</th><th>Sport</th><th>Cena</th><th>Zalihe</th><th>Akcija</th></tr></thead>
+              <tbody>
+                @for (e of equipment; track e._id) {
+                  <tr>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.sport?.name || '—' }}</td>
+                    <td>{{ e.price }} RSD</td>
+                    <td>{{ e.stock }}</td>
+                    <td><button class="btn btn-outline btn-sm" (click)="editEq(e)"> Uredi</button></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+  
+      <!-- PORUDŽBINE -->
+      @if (activeTab === 'orders') {
+        @if (orders.length === 0) {
+          <div class="empty">Nema porudžbina.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Korisnik</th><th>Stavke</th><th>Ukupno</th><th>Status</th><th>Akcija</th></tr></thead>
+              <tbody>
+                @for (o of orders; track o._id) {
+                  <tr>
+                    <td>{{ o.user?.firstName }} {{ o.user?.lastName }}</td>
+                    <td>
+                      @for (item of o.items; track item.equipment) {
+                        <span class="item-tag">{{ item.name }} x{{ item.quantity }}</span>
+                      }
+                    </td>
+                    <td>{{ o.totalPrice }} RSD</td>
+                    <td><span class="badge badge-{{ o.status }}">{{ orderStatusLabel(o.status) }}</span></td>
+                    <td>
+                      @if (o.status === 'ordered') {
+                        <button class="btn btn-success btn-sm" (click)="updateOrderStatus(o._id, 'accepted')">Prihvati</button>
+                      }
+                      @if (o.status === 'accepted') {
+                        <button class="btn btn-primary btn-sm" (click)="updateOrderStatus(o._id, 'picked_up')">Preuzeto</button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  </div>

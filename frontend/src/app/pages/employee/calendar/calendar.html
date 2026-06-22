@@ -1,1 +1,90 @@
-<p>calendar works!</p>
+<div class="calendar-page">
+    <h2 class="page-title"> Interaktivni kalendar</h2>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    @if (facilities.length === 0) {
+      <div class="empty">Nemate objekata.</div>
+    } @else {
+      <div class="card filter-card">
+        <div class="filter-row">
+          <div class="form-group">
+            <label>Objekat</label>
+            <select class="form-control" [(ngModel)]="selectedFacilityId" (change)="onFacilityChange()">
+              @for (f of facilities; track f._id) { <option [value]="f._id">{{ f.name }}</option> }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Teren / hala</label>
+            <select class="form-control" [(ngModel)]="selectedCourtId" (change)="onCourtChange()">
+              @for (c of selectedFacility?.courts; track c._id) {
+                <option [value]="c._id">{{ c.name }} ({{ courtTypeLabel(c.type) }})</option>
+              }
+            </select>
+          </div>
+        </div>
+        @if (selectedCourt && !isDraggable()) {
+          <p class="hint"> Drag-and-drop pomeranje termina je dostupno samo za zatvorene hale i dvorane.</p>
+        }
+      </div>
+  
+      <div class="calendar-nav">
+        <button class="btn btn-outline btn-sm" (click)="prevWeek()">← Prethodna nedelja</button>
+        <button class="btn btn-outline btn-sm" (click)="today()">Danas</button>
+        <span class="week-label">{{ weekStart | date:'dd.MM' }} – {{ getWeekDays()[6] | date:'dd.MM.yyyy' }}</span>
+        <button class="btn btn-outline btn-sm" (click)="nextWeek()">Sledeća nedelja →</button>
+      </div>
+  
+      @if (loading) {
+        <div class="empty">Učitavanje...</div>
+      } @else {
+        <div class="calendar-wrapper">
+          <div class="calendar-grid">
+            <div class="time-col-header"></div>
+            @for (day of getWeekDays(); track day.toISOString(); let i = $index) {
+              <div class="day-header">
+                <span class="day-name">{{ days[i] }}</span>
+                <span class="day-date">{{ day | date:'dd.MM' }}</span>
+              </div>
+            }
+  
+            @for (hour of hours; track hour) {
+                <div class="time-label">{{ hour }}:00</div>
+                @for (day of getWeekDays(); track day.toISOString()) {
+                  <div
+                    class="cal-slot"
+                    [class.has-event]="getEventAt(day, hour)"
+                    [class.draggable-zone]="isDraggable()"
+                    (dragover)="onDragOver($event)"
+                    (drop)="onDrop($event, day, hour)"
+                  >
+                    @if (isSlotStart(day, hour)) {
+                      @let event = getEventAt(day, hour);
+                      <div
+                        class="event-card"
+                        [class.reservation]="event?.type === 'reservation'"
+                        [class.training]="event?.type === 'training'"
+                        [class.draggable]="isDraggable() && (event?.type === 'reservation' || event?.type === 'training')"
+                        [draggable]="isDraggable() && (event?.type === 'reservation' || event?.type === 'training')"
+                        (dragstart)="onDragStart($event, event, day, hour)"
+                        [style.height.px]="eventSpanHours(event) * 48 - 4"
+                      >
+                        <span class="event-label">{{ eventLabel(event) }}</span>
+                        <span class="event-hours">{{ eventHours(event) }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+          </div>
+  
+          <div class="legend">
+            <span class="legend-item"><span class="legend-box free"></span> Slobodno</span>
+            <span class="legend-item"><span class="legend-box reservation"></span> Rezervacija</span>
+            <span class="legend-item"><span class="legend-box training"></span> Trening</span>
+          </div>
+        </div>
+      }
+    }
+  </div>

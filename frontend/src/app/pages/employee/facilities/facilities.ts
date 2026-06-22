@@ -188,7 +188,7 @@ export class EmployeeFacilities implements OnInit {
         this.mode = 'list';
         this.jsonFile = null;
         this.load();
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();
         setTimeout(() => { this.message = ''; this.cdr.detectChanges(); }, 4000);
       },
       error: (err) => {

@@ -1,1 +1,43 @@
-<p>reports works!</p>
+<div class="reports-page">
+    <h2 class="page-title"> Izveštaji</h2>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    @if (facilities.length === 0) {
+      <div class="empty">Nemate objekata.</div>
+    } @else {
+      <div class="card filter-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Objekat</label>
+            <select class="form-control" [(ngModel)]="selectedFacilityId">
+              @for (f of facilities; track f._id) { <option [value]="f._id">{{ f.name }}</option> }
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mesec</label>
+            <input class="form-control" type="month" [(ngModel)]="selectedMonth">
+          </div>
+        </div>
+      </div>
+  
+      <div class="reports-grid">
+        <div class="report-card">
+          <h3>Izveštaj o popunjenosti terena</h3>
+          <p>Procenat popunjenosti svakog terena/hale u izabranom mesecu, na osnovu broja sati rezervisanih u odnosu na ukupno raspoloživo radno vreme.</p>
+          <button class="btn btn-primary" (click)="downloadOccupancy()" [disabled]="loadingOccupancy">
+            {{ loadingOccupancy ? 'Generisanje...' : ' Preuzmi PDF' }}
+          </button>
+        </div>
+  
+        <div class="report-card">
+          <h3>Izveštaj o prometu opreme</h3>
+          <p>Pregled svih prihvaćenih i preuzetih porudžbina opreme u izabranom mesecu, sa ukupnim prihodom.</p>
+          <button class="btn btn-primary" (click)="downloadEquipment()" [disabled]="loadingEquipment">
+            {{ loadingEquipment ? 'Generisanje...' : 'Preuzmi PDF' }}
+          </button>
+        </div>
+      </div>
+    }
+  </div>

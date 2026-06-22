@@ -1,1 +1,84 @@
-<p>reservations works!</p>
+<div class="reservations-page">
+    <h2 class="page-title"> Rezervacije i treninzi</h2>
+  
+    @if (message) { <div class="alert alert-success">{{ message }}</div> }
+    @if (error) { <div class="alert alert-error">{{ error }}</div> }
+  
+    @if (facilities.length === 0) {
+      <div class="empty">Nemate objekata. Prvo dodajte objekat.</div>
+    } @else {
+      <div class="card filter-card">
+        <div class="form-group">
+          <label>Objekat</label>
+          <select class="form-control" [(ngModel)]="selectedFacilityId" (change)="onFacilityChange()">
+            @for (f of facilities; track f._id) { <option [value]="f._id">{{ f.name }}</option> }
+          </select>
+        </div>
+      </div>
+  
+      <div class="tabs">
+        <button class="tab" [class.active]="activeTab === 'reservations'" (click)="activeTab = 'reservations'">Rezervacije terena</button>
+        <button class="tab" [class.active]="activeTab === 'trainings'" (click)="activeTab = 'trainings'">Individualni treninzi</button>
+      </div>
+  
+      @if (activeTab === 'reservations') {
+        @if (loading) {
+          <div class="empty">Učitavanje...</div>
+        } @else if (reservations.length === 0) {
+          <div class="empty">Nema rezervacija za ovaj objekat.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Korisnik</th><th>Telefon</th><th>Teren</th><th>Sport</th><th>Od</th><th>Do</th><th>Status</th><th>Akcija</th></tr>
+              </thead>
+              <tbody>
+                @for (r of reservations; track r._id) {
+                  <tr>
+                    <td>{{ r.user?.firstName }} {{ r.user?.lastName }}</td>
+                    <td>{{ r.user?.phone }}</td>
+                    <td>{{ r.courtName }}</td>
+                    <td>{{ r.sport?.name || '—' }}</td>
+                    <td>{{ r.startTime | date:'dd.MM.yyyy HH:mm' }}</td>
+                    <td>{{ r.endTime | date:'HH:mm' }}</td>
+                    <td><span class="badge badge-{{ r.status }}">{{ statusLabel(r.status) }}</span></td>
+                    <td>
+                      @if (canAct(r)) {
+                        <button class="btn btn-success btn-sm" (click)="confirm(r._id)">✓ Potvrdi</button>
+                        <button class="btn btn-danger btn-sm" (click)="noShow(r._id)">✕ Odjavi</button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+  
+      @if (activeTab === 'trainings') {
+        @if (trainings.length === 0) {
+          <div class="empty">Nema zakazanih treninga za ovaj objekat.</div>
+        } @else {
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Sportista</th><th>Trener</th><th>Od</th><th>Do</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                @for (t of trainings; track t._id) {
+                  <tr>
+                    <td>{{ t.athlete?.firstName }} {{ t.athlete?.lastName }}</td>
+                    <td>{{ t.trainer?.firstName }} {{ t.trainer?.lastName }}</td>
+                    <td>{{ t.startTime | date:'dd.MM.yyyy HH:mm' }}</td>
+                    <td>{{ t.endTime | date:'HH:mm' }}</td>
+                    <td><span class="badge badge-{{ t.status }}">{{ trainingStatusLabel(t.status) }}</span></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  </div>

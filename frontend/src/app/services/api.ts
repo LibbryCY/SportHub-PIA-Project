@@ -41,6 +41,44 @@ export class ApiService {
     return this.http.get<any[]>(`${this.base}/promotions`, { params: p });
   }
 
+  createPromotion(data: any): Observable<any> {
+    return this.http.post<any>(`${this.base}/promotions`, data);
+  }
+  updatePromotion(id: string, data: any): Observable<any> {
+    return this.http.put<any>(`${this.base}/promotions/${id}`, data);
+  }
+  getFacilityPromotions(facilityId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/promotions`, { params: new HttpParams().set('facility', facilityId) });
+  }
+
+  // Equipment
+  getEquipment(params?: any): Observable<any[]> {
+    let p = new HttpParams();
+    if (params) Object.keys(params).forEach(k => { if (params[k]) p = p.set(k, params[k]); });
+    return this.http.get<any[]>(`${this.base}/equipment`, { params: p });
+  }
+  createOrder(data: any): Observable<any> {
+    return this.http.post<any>(`${this.base}/equipment/orders`, data);
+  }
+  getMyOrders(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/equipment/orders/my`);
+  }
+  cancelOrder(id: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/equipment/orders/${id}/cancel`, {});
+  }
+  createEquipment(data: any): Observable<any> {
+    return this.http.post<any>(`${this.base}/equipment`, data);
+  }
+  updateEquipment(id: string, data: any): Observable<any> {
+    return this.http.put<any>(`${this.base}/equipment/${id}`, data);
+  }
+  getFacilityOrders(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/equipment/orders/facility`);
+  }
+  updateOrderStatus(id: string, status: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/equipment/orders/${id}/status`, { status });
+  }
+
   // Sports
   getSports(): Observable<any[]> {
     return this.http.get<any[]>(`${this.base}/sports`);
@@ -109,21 +147,11 @@ export class ApiService {
     return this.http.patch<any>(`${this.base}/reservations/${id}/no-show`, {});
   }
 
-  // Equipment
-  getEquipment(params?: any): Observable<any[]> {
-    let p = new HttpParams();
-    if (params) Object.keys(params).forEach(k => { if (params[k]) p = p.set(k, params[k]); });
-    return this.http.get<any[]>(`${this.base}/equipment`, { params: p });
+  moveReservation(id: string, newStartTime: string, newEndTime: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/reservations/${id}/move`, { newStartTime, newEndTime });
   }
-  createOrder(data: any): Observable<any> {
-    return this.http.post<any>(`${this.base}/equipment/orders`, data);
-  }
-  getMyOrders(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.base}/equipment/orders/my`);
-  }
-  cancelOrder(id: string): Observable<any> {
-    return this.http.patch<any>(`${this.base}/equipment/orders/${id}/cancel`, {});
-  }
+
+
 
   // Ads
   getAds(): Observable<any[]> {
@@ -154,6 +182,9 @@ export class ApiService {
   }
   scheduleTraining(data: any): Observable<any> {
     return this.http.post<any>(`${this.base}/trainers/trainings`, data);
+  }
+  moveTraining(id: string, newStartTime: string, newEndTime: string): Observable<any> {
+    return this.http.patch<any>(`${this.base}/trainers/trainings/${id}/move`, { newStartTime, newEndTime });
   }
 
   // Admin
@@ -188,19 +219,38 @@ export class ApiService {
 
 
   }
-// Employee
-createFacility(formData: FormData): Observable<any> {
-  return this.http.post<any>(`${this.base}/facilities`, formData);
-}
-importFacilityJson(formData: FormData): Observable<any> {
-  return this.http.post<any>(`${this.base}/facilities/import-json`, formData);
-}
-updateFacility(id: string, formData: FormData): Observable<any> {
-  return this.http.put<any>(`${this.base}/facilities/${id}`, formData);
-}
-getMyFacilities(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.base}/facilities/my/list`);
-}
+
+  // Employee
+  createFacility(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.base}/facilities`, formData);
+  }
+  importFacilityJson(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.base}/facilities/import-json`, formData);
+  }
+  updateFacility(id: string, formData: FormData): Observable<any> {
+    return this.http.put<any>(`${this.base}/facilities/${id}`, formData);
+  }
+  getMyFacilities(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/facilities/my/list`);
+  }
+
+  getFacilityTrainings(facilityId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/trainers/trainings/facility/${facilityId}`);
+  }
+
+  // PDF reports
+  downloadOccupancyReport(facilityId: string, month: string) {
+    const token = localStorage.getItem('token');
+    return fetch(`${this.base}/reports/occupancy/${facilityId}?month=${month}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+  downloadEquipmentReport(facilityId: string, month: string) {
+    const token = localStorage.getItem('token');
+    return fetch(`${this.base}/reports/equipment/${facilityId}?month=${month}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
 
 }
 

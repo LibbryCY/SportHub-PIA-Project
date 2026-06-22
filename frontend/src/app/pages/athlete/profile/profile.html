@@ -18,7 +18,7 @@
             <p class="email">{{ user.email }}</p>
           </div>
           @if (!editMode) {
-            <button class="btn btn-outline btn-sm ml-auto" (click)="editMode = true">✏️ Uredi profil</button>
+            <button class="btn btn-outline btn-sm ml-auto" (click)="editMode = true">Uredi profil</button>
           }
         </div>
   
@@ -66,7 +66,7 @@
               <label>Profilna slika</label>
               <div class="image-row">
                 <img class="img-preview" [src]="profileImagePreview || getImageUrl(user.profileImage)" alt="Preview">
-                <label class="btn btn-outline btn-sm" for="editFileInput">📁 Promeni sliku</label>
+                <label class="btn btn-outline btn-sm" for="editFileInput">Promeni sliku</label>
                 <input id="editFileInput" type="file" accept="image/*" (change)="onFileSelected($event)" style="display:none">
               </div>
             </div>

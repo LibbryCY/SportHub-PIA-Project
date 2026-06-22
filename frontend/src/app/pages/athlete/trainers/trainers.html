@@ -67,6 +67,16 @@
             <label>Kraj treninga</label>
             <input class="form-control" type="datetime-local" [(ngModel)]="bookForm.endTime">
           </div>
+
+          <div class="form-group">
+            <label>Teren / hala *</label>
+            <select class="form-control" [(ngModel)]="bookForm.courtId" (change)="onCourtChange()">
+              <option value="">Odaberi teren</option>
+              @for (c of courts; track c._id) {
+                <option [value]="c._id">{{ c.name }}</option>
+              }
+            </select>
+          </div>
   
           <div class="btn-row">
             <button class="btn btn-primary" (click)="bookTraining()">Zakaži</button>
