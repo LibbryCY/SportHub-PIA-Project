@@ -170,7 +170,7 @@ router.put(
 // POST /api/facilities/:id/react - like/dislike
 router.post("/:id/react", auth, requireRole("athlete"), async (req, res) => {
   try {
-    const { reaction } = req.body; // 'like' or 'dislike'
+    const { reaction } = req.body; // ike/dislike
     const userId = req.user._id;
 
     // Check user has at least one confirmed reservation
