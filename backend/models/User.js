@@ -29,16 +29,14 @@ const userSchema = new mongoose.Schema({
     },
   ],
 
-  // Employee-specific
+  // Employee
   facilityName: String,
   facilityAddress: String,
   registrationNumber: {
-    // matični broj - 8 cifara, jedinstven
     type: String,
     validate: { validator: (v) => !v || /^\d{8}$/.test(v) },
   },
   pib: {
-    // 9 cifara, ne počinje nulom
     type: String,
     validate: { validator: (v) => !v || /^[1-9]\d{8}$/.test(v) },
   },

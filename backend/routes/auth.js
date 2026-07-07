@@ -81,7 +81,6 @@ router.post("/register", upload.single("profileImage"), async (req, res) => {
           .status(400)
           .json({ message: "Registration number already exists" });
 
-      // Check max 2 employees per facility
       const sameCompany = await User.countDocuments({
         pib,
         role: "employee",
@@ -207,10 +206,10 @@ router.post("/forgot-password", async (req, res) => {
     await user.save();
 
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-    // TODO: send email with resetLink (configure nodemailer)
+    
     console.log("Reset link:", resetLink);
 
-    res.json({ message: "Password reset link sent to your email" });
+    res.json({ link: resetLink, message: "Password reset link generated" });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -220,18 +219,22 @@ router.post("/forgot-password", async (req, res) => {
 router.post("/reset-password", async (req, res) => {
   try {
     const { token, newPassword } = req.body;
+    console.log("Reset password attempt with token:", token);
     const user = await User.findOne({
       resetToken: token,
       resetTokenExpiry: { $gt: Date.now() },
     });
     if (!user)
       return res.status(400).json({ message: "Invalid or expired token" });
+    console.log("User found for reset:", user.username);
 
     const pwRegex =
-      /^[A-Za-z](?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{7,11}$/;
-    if (!pwRegex.test(newPassword))
+    /^(?=[A-Za-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,12}$/;
+    if (!pwRegex.test(newPassword)) {
       return res.status(400).json({ message: "Invalid password format" });
+    }
 
+    
     user.password = newPassword;
     user.resetToken = undefined;
     user.resetTokenExpiry = undefined;

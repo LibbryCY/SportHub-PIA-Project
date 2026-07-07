@@ -15,6 +15,7 @@ export class ForgotPassword {
   usernameOrEmail = '';
   message = '';
   error = '';
+  resetLink = '';
   loading = false;
 
   constructor(private api: ApiService) {}
@@ -27,6 +28,10 @@ export class ForgotPassword {
       next: (res) => {
         this.loading = false;
         this.message = res.message;
+        this.resetLink = res.link;
+
+        console.log('Reset link:', this.resetLink);
+
       },
       error: (err) => {
         this.loading = false;

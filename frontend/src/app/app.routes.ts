@@ -9,6 +9,10 @@ export const routes: Routes = [
     path: 'forgot-password', 
     loadComponent: () => import('./pages/auth/forgot-password/forgot-password').then(m => m.ForgotPassword) 
   },
+  { 
+    path: 'reset-password', 
+    loadComponent: () => import('./pages/auth/reset-password/reset-password').then(m => m.ResetPassword) 
+  },
   { path: 'register', loadComponent: () => import('./pages/auth/register/register').then(m => m.Register) },
   { path: 'facilities', loadComponent: () => import('./pages/facilities/facility-list/facility-list').then(m => m.FacilityList) },
   { path: 'facilities/:id', loadComponent: () => import('./pages/facilities/facility-detail/facility-detail').then(m => m.FacilityDetail) },
